@@ -242,7 +242,7 @@
         <li class="nav-item"><a class="nav-link" href="#hero">Inicio</a></li>
         <li class="nav-item"><a class="nav-link" href="#services-section">Servicios</a></li>
         <li class="nav-item"><a class="nav-link" href="#products-section">Planes</a></li>
-        <li class="nav-item"><a class="nav-link" href="#services-section">Iniciar Sesión</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'login_clientes' %}">Iniciar Sesión</a></li>
       </ul>
     </div>
   </div>
@@ -253,7 +253,7 @@
   <div class="hero-content">
     <h1>Bienvenidos al Gimnasio</h1>
     <p>Planes y servicios ajustados para los clientes</p>
-    <a href="#services-section" class="btn btn-primary">Inscríbete ya</a>
+    <a href="{% url 'reg_clientes' %}" class="btn btn-primary">Inscríbete ya</a>
   </div>
 </section>
 
