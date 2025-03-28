@@ -225,6 +225,61 @@
     .products-slider::-webkit-scrollbar-thumb:hover {
       background: #c92a38;
     }
+
+    .group-classes-section {
+     padding: 100px 0;
+    }
+
+    .group-classes-slider {
+      display: flex;
+      overflow-x: auto;
+      gap: 24px;
+      padding-bottom: 20px;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      scroll-padding: 20px;
+    }
+
+    .group-class-card {
+      flex: 0 0 calc(33% - 24px);
+      min-width: 320px;
+      background-color: #1a1a1a;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      scroll-snap-align: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .group-class-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.7);
+    }
+
+    .group-classes-slider::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .group-classes-slider::-webkit-scrollbar-track {
+      background: #222;
+      border-radius: 10px;
+    }
+
+    .group-classes-slider::-webkit-scrollbar-thumb {
+      background: #e63946;
+      border-radius: 10px;
+    }
+
+    .group-classes-slider::-webkit-scrollbar-thumb:hover {
+      background: #c92a38;
+    }
+
   </style>
   
 </head>
@@ -260,14 +315,24 @@
  <!-- Sección de Servicios -->
 <section class="services-section text-center" id="services-section">
   <div class="container">
-    <h2 class="mb-5">Nuestros Servicios</h2>
+    <h2 class="mb-5">Sesiones personalizadas</h2>
     <div class="services-slider">
       <!-- Servicio de Entrenamiento Personal -->
       <div class="service-card" style="background-image: url('../media/estaticas/ent_personal.jpg');">
         <div class="overlay"></div>
         <div class="card-content">
           <h3>ENTRENAMIENTO PERSONAL</h3>
-          <p>Sesiones personalizadas con entrenadores expertos.</p>
+          <p>Uso de maquinas y espacios para el entrenamiento</p>
+          <a href="#" class="btn btn-warning">CONOCER MÁS</a>
+        </div>
+      </div>
+
+      <!-- Servicio de Entrenadores -->
+      <div class="service-card" style="background-image: url('../media/estaticas/ent_personal.jpg');">
+        <div class="overlay"></div>
+        <div class="card-content">
+          <h3>ENTRENADORES PERSONALES</h3>
+          <p>Accede a nuestros entranadores personales</p>
           <a href="#" class="btn btn-warning">CONOCER MÁS</a>
         </div>
       </div>
@@ -333,6 +398,44 @@
           <p class="price-old">$109.000</p>
           <p class="price-new">$99.000</p>
           <a href="#" class="btn btn-warning">COMPRAR</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección de Clases Grupales -->
+<section class="group-classes-section text-center" id="group-classes-section">
+  <div class="container">
+    <h2 class="mb-5">Clases Grupales</h2>
+    <div class="group-classes-slider">
+      <!-- Clase de Yoga -->
+      <div class="group-class-card" style="background-image: url('../media/estaticas/yoga.jpg');">
+        <div class="overlay"></div>
+        <div class="card-content">
+          <h3>YOGA</h3>
+          <p>Relaja tu mente y fortalece tu cuerpo con nuestras clases de yoga.</p>
+          <a href="#" class="btn btn-warning">VER HORARIOS</a>
+        </div>
+      </div>
+
+      <!-- Clase de Pilates -->
+      <div class="group-class-card" style="background-image: url('../media/estaticas/pilates.jpg');">
+        <div class="overlay"></div>
+        <div class="card-content">
+          <h3>PILATES</h3>
+          <p>Mejora tu flexibilidad y fuerza con nuestras sesiones de pilates.</p>
+          <a href="#" class="btn btn-warning">VER HORARIOS</a>
+        </div>
+      </div>
+
+      <!-- Clase de Zumba -->
+      <div class="group-class-card" style="background-image: url('../media/estaticas/zumba.jpg');">
+        <div class="overlay"></div>
+        <div class="card-content">
+          <h3>ZUMBA</h3>
+          <p>Baila y diviértete mientras te pones en forma con nuestras clases de zumba.</p>
+          <a href="#" class="btn btn-warning">VER HORARIOS</a>
         </div>
       </div>
     </div>

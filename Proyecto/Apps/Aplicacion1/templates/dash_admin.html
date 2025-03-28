@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #e63946;      
+      --dark: #121212;       
+      --light: #ffffff;     
+      --sidebar-bg: rgba(0, 0, 0, 0.9);
+      --text-dark: #121212;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--dark);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    body.sidebar-hidden .sidebar {
+      transform: translateX(-100%);
+    }
+    .sidebar {
+      background-color: var(--sidebar-bg);
+      min-height: 100vh;
+      padding: 20px;
+      position: fixed;
+      width: 350px;
+      transition: transform 0.3s ease;
+      z-index: 1100;
+    }
+    .sidebar h2 {
+      color: var(--primary);
+      font-weight: bold;
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+    }
+    .sidebar a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      margin: 15px 0;
+      font-size: 18px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .sidebar a:hover {
+      background-color: rgba(230, 57, 70, 0.2);
+      transform: translateX(10px);
+      color: var(--primary);
+    }
+    
+    .top-navbar {
+      background-color: var(--sidebar-bg);
+      padding: 40px 50px;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 120px;
+      transition: left 0.3s ease;
+    }
+    body.sidebar-visible .top-navbar {
+      left: 350px;
+    }
+    .top-navbar .brand {
+      font-size: 42px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    .top-navbar .logout {
+      font-size: 20px;
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .top-navbar .logout:hover {
+      color: var(--primary);
+    }
+    .toggle-sidebar {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      margin-right: 20px;
+      transition: color 0.3s ease;
+    }
+    .toggle-sidebar:hover {
+      color: var(--primary);
+    }
+    
+    .main-content {
+      margin-left: 0;
+      padding: 40px;
+      background-color: var(--light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+      display: none;
+      overflow-y: auto;
+    }
+    body.sidebar-visible .main-content {
+      margin-left: 350px;
+    }
+    .content-wrapper {
+      margin-top: 140px;
+    }
+    .fade-in {
+      animation: fadeIn 0.8s ease;
+    }
+    
+    .container-registro {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 1s ease;
+    }
+    .row-registro {
+      display: flex;
+      width: 80%;
+      max-width: 1200px;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  
+    .form-section {
+      background-color: #fff;
+      padding: 40px;
+      flex: 1;
+      animation: slideIn 0.8s ease-out;
+    }
+    .form-section h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    .form-section input,
+    .form-section select {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      transition: border-color 0.3s ease;
+    }
+    .form-section input:focus,
+    .form-section select:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    .form-section .btn-signup,
+    .form-section .btn-submit {
+      background-color: var(--primary);
+      color: #fff;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 30px;
+      text-transform: uppercase;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    .form-section .btn-signup:hover,
+    .form-section .btn-submit:hover {
+      background-color: #c92a38;
+    }
+    .terms {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 15px;
+      color: #555;
+    }
+    .form-group.checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
+    }
+    .form-group.checkbox-group input {
+      width: auto;
+      margin-right: 10px;
+    }
+    .form-group.checkbox-group label {
+      font-size: 12px;
+    }
+    
+    @media (max-width: 768px) {
+      .row-registro {
+        flex-direction: column;
+      }
+      .form-section {
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body class="sidebar-hidden">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Admin GYM</h2>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#roles" id="link-crear-rol">Gestión de roles</a>
+    <a href="#empleados" id="link-crear-empleado">Gestión de empleados</a>
+    <a href="#clases">Clases</a>
+    <a href="#reportes">Reportes</a>
+    <a href="#configuracion">Configuración</a>
+  </div>
+  
+  <!-- Header -->
+  <div class="top-navbar">
+    <div class="d-flex align-items-center">
+      <button class="toggle-sidebar" id="toggleSidebar">&#9776;</button>
+      <div class="brand">Panel de Control</div>
+    </div>
+    <a href="#" class="logout">Cerrar Sesión</a>
+  </div>
+  
+  <!-- Sección de Roles -->
+  <div class="main-content" id="mainContent">
+    <div class="content-wrapper container fade-in">
+      <div class="container-registro">
+        <div class="row-registro">
+          <div class="form-section">
+            <h2>Crear Rol</h2>
+            <form action="{% url 'crear_rol' %}" method="POST">
+              {% csrf_token %}
+              <input type="text" id="nombre" name="nombre" placeholder="Nombre del rol" required>
+              <button type="submit" class="btn-submit mt-4">Registrar Rol</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div style="height: 80px;"></div>
+      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Roles Existentes</h2>
+      <div class="table-responsive fade-in">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre del rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rol in roles %}
+            <tr>
+              <td>{{ rol.id }}</td>
+              <td>{{ rol.nombre }}</td>
+              <td>
+                <a href="{% url 'eliminar_rol' rol.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center">No hay roles registrados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sección de Gestión de Empleados -->
+  <div class="main-content" id="empleadoContent" style="display: none;">
+    <div class="content-wrapper container fade-in">
+      <div class="container-registro">
+        <div class="row-registro">
+          <div class="form-section">
+            <h2>Crear Cuenta de Usuario</h2>
+            <form action="{% url 'reg_empleados' %}" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
+              <input type="text" id="cedula" name="cedula" placeholder="Cédula" required>
+              <input type="text" id="telefono" name="telefono" placeholder="Teléfono" required>
+              <input type="text" id="direccion" name="direccion" placeholder="Dirección" required>
+              <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
+              <input type="password" id="contraseña" name="password" placeholder="Contraseña" required>
+              
+              <label for="rol" style="display: block; margin-bottom: 5px;">Rol</label>
+              <select id="rol" name="rol" required style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <option value="">Seleccione un rol</option>
+                {% for rol in roles %}
+                  <option value="{{ rol.id }}">{{ rol.nombre }}</option>
+                {% endfor %}
+              </select>
+              
+              <label for="foto" class="form-label">Foto de perfil (opcional)</label>
+              <input type="file" id="foto" name="foto" accept="image/*">
+              
+              <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento (opcional)</label>
+              <input type="date" id="fecha_nacimiento" name="fecha_nacimiento">
+              
+              <div class="form-group checkbox-group">
+                <input type="checkbox" id="terminos" name="terminos" required>
+                <label for="terminos">Acepto los <a href="#">términos y condiciones</a></label>
+              </div>
+              
+              <button type="submit" class="btn-signup mt-4">Registrarse</button>
+              
+              <p class="terms">Al registrarte, aceptas nuestros <a href="#">términos y condiciones</a>.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div style="height: 80px;"></div>
+      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Usuarios Existentes</h2>
+      <div class="table-responsive fade-in">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Cédula</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for empleado in empleados %}
+            <tr>
+              <td>{{ empleado.id }}</td>
+              <td>{{ empleado.nombre }}</td>
+              <td>{{ empleado.cedula }}</td>
+              <td>{{ empleado.correo }}</td>
+              <td>{{ empleado.rol.nombre }}</td>
+              <td>
+                <a href="{% url 'eliminar_empleado' empleado.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No hay empleados registrados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Mostrar/ocultar el sidebar
+    document.getElementById('toggleSidebar').addEventListener('click', function() {
+      if(document.body.classList.contains('sidebar-hidden')) {
+        document.body.classList.remove('sidebar-hidden');
+        document.body.classList.add('sidebar-visible');
+      } else {
+        document.body.classList.remove('sidebar-visible');
+        document.body.classList.add('sidebar-hidden');
+      }
+    });
+    // Mostrar sección de roles
+    document.getElementById('link-crear-rol').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('mainContent').style.display = 'block';
+      document.getElementById('empleadoContent').style.display = 'none';
+    });
+    // Mostrar sección de empleados
+    document.getElementById('link-crear-empleado').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('empleadoContent').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
