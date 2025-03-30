@@ -28,3 +28,31 @@ class Empleado(models.Model):
 
     def __str__(self):
         return f'{self.usuario.nombre} - {self.puesto}'
+
+from django.db import models
+
+class PlanMembresia(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    descripcion = models.TextField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    duracion_meses = models.IntegerField()
+
+    def __str__(self):
+        return self.nombre
+
+class Equipo(models.Model):
+    ESTADO_CHOICES = [
+        ('DISP', 'Disponible'),
+        ('MTTO', 'En mantenimiento'),
+        ('FUERA', 'Fuera de servicio'),
+    ]
+    
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
+    tipo = models.CharField(max_length=50, blank=True, null=True, help_text="Ej: Cardio, Pesas, Funcional, etc.")
+    estado = models.CharField(max_length=5, choices=ESTADO_CHOICES, default='DISP')
+    cantidad = models.PositiveIntegerField(default=1)
+    fecha_ultima_revision = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.nombre} ({self.get_estado_display()})"

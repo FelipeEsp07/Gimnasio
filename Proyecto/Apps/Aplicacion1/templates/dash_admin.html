@@ -11,12 +11,11 @@
   <style>
     :root {
       --primary: #e63946;      
-      --dark: #121212;       
-      --light: #ffffff;     
+      --dark: #121212;         
+      --light: #ffffff;      
       --sidebar-bg: rgba(0, 0, 0, 0.9);
       --text-dark: #121212;
     }
-    
     html, body {
       height: 100%;
       margin: 0;
@@ -33,6 +32,11 @@
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
     
     body.sidebar-hidden .sidebar {
@@ -148,7 +152,7 @@
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-  
+    
     .form-section {
       background-color: #fff;
       padding: 40px;
@@ -163,7 +167,8 @@
       font-weight: 600;
     }
     .form-section input,
-    .form-section select {
+    .form-section select,
+    .form-section textarea {
       margin-bottom: 15px;
       padding: 10px;
       border: 1px solid #ccc;
@@ -172,7 +177,8 @@
       transition: border-color 0.3s ease;
     }
     .form-section input:focus,
-    .form-section select:focus {
+    .form-section select:focus,
+    .form-section textarea:focus {
       border-color: var(--primary);
       outline: none;
     }
@@ -186,11 +192,12 @@
       border-radius: 30px;
       text-transform: uppercase;
       font-size: 14px;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.3s;
     }
     .form-section .btn-signup:hover,
     .form-section .btn-submit:hover {
       background-color: #c92a38;
+      transform: scale(1.05);
     }
     .terms {
       font-size: 12px;
@@ -211,6 +218,40 @@
       font-size: 12px;
     }
     
+    .table-responsive {
+      margin-top: 40px;
+    }
+    .table-striped tbody tr {
+      transition: background-color 0.3s ease;
+    }
+    .table-striped tbody tr:hover {
+      background-color: rgba(230, 57, 70, 0.1);
+    }
+    .table th, .table td {
+      padding: 12px 15px;
+      vertical-align: middle;
+    }
+    
+    .modal-content {
+      border-radius: 10px;
+      border: 2px solid var(--primary);
+    }
+    .modal-header, .modal-footer {
+      background-color: var(--light);
+    }
+    .modal-title {
+      color: var(--primary);
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #c92a38;
+      transform: scale(1.05);
+    }
+    
     @media (max-width: 768px) {
       .row-registro {
         flex-direction: column;
@@ -225,11 +266,12 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <h2>Admin GYM</h2>
-    <a href="#dashboard">Dashboard</a>
+    <a href="#dashboard" id="link-dashboard">Inicio Dashboard</a>
     <a href="#roles" id="link-crear-rol">Gestión de roles</a>
     <a href="#empleados" id="link-crear-empleado">Gestión de empleados</a>
-    <a href="#clases">Clases</a>
-    <a href="#reportes">Reportes</a>
+    <a href="#membresias" id="link-crear-membresia">Gestión de membresías</a>
+    <a href="#equipos" id="link-crear-equipo">Monitoreo de equipos</a>
+    <a href="#servicios">Gestión de servicios</a>
     <a href="#configuracion">Configuración</a>
   </div>
   
@@ -241,10 +283,55 @@
     </div>
     <a href="#" class="logout">Cerrar Sesión</a>
   </div>
-  
+  <!-- Sección de Inicio Dashboard -->
+  <div class="main-content" id="dashboardContent" style="display: block;">
+    <div class="content-wrapper container fade-in">
+      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Resumen del Sistema</h2>
+      <div class="row">
+        <!-- Tarjeta Total de Usuarios -->
+        <div class="col-md-3 mb-4">
+          <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div class="card-body">
+              <h5 class="card-title" style="color: var(--primary);">Total de Usuarios</h5>
+              <p class="card-text" style="font-size: 2rem; font-weight: bold;">{{ total_usuarios }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta Total de Roles -->
+        <div class="col-md-3 mb-4">
+          <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div class="card-body">
+              <h5 class="card-title" style="color: var(--primary);">Total de Roles</h5>
+              <p class="card-text" style="font-size: 2rem; font-weight: bold;">{{ total_roles }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta Total de Membresías -->
+        <div class="col-md-3 mb-4">
+          <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div class="card-body">
+              <h5 class="card-title" style="color: var(--primary);">Total de Membresías</h5>
+              <p class="card-text" style="font-size: 2rem; font-weight: bold;">{{ total_membresias }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta Total de Equipos -->
+        <div class="col-md-3 mb-4">
+          <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div class="card-body">
+              <h5 class="card-title" style="color: var(--primary);">Total de Equipos</h5>
+              <p class="card-text" style="font-size: 2rem; font-weight: bold;">{{ total_equipos }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Sección de Roles -->
   <div class="main-content" id="mainContent">
     <div class="content-wrapper container fade-in">
+      <!-- Formulario para crear rol -->
       <div class="container-registro">
         <div class="row-registro">
           <div class="form-section">
@@ -258,6 +345,7 @@
         </div>
       </div>
       <div style="height: 80px;"></div>
+      <!-- Tabla de roles -->
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Roles Existentes</h2>
       <div class="table-responsive fade-in">
         <table class="table table-striped">
@@ -274,7 +362,7 @@
               <td>{{ rol.id }}</td>
               <td>{{ rol.nombre }}</td>
               <td>
-                <a href="{% url 'eliminar_rol' rol.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                <a href="{% url 'eliminar_rol' rol.id %}" class="btn btn-sm btn-danger" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Eliminar</a>
               </td>
             </tr>
             {% empty %}
@@ -291,10 +379,11 @@
   <!-- Sección de Gestión de Empleados -->
   <div class="main-content" id="empleadoContent" style="display: none;">
     <div class="content-wrapper container fade-in">
+      <!-- Formulario para registrar empleado -->
       <div class="container-registro">
         <div class="row-registro">
           <div class="form-section">
-            <h2>Crear Cuenta de Usuario</h2>
+            <h2>Crear Cuenta de Empleado</h2>
             <form action="{% url 'reg_empleados' %}" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
@@ -303,7 +392,6 @@
               <input type="text" id="direccion" name="direccion" placeholder="Dirección" required>
               <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
               <input type="password" id="contraseña" name="password" placeholder="Contraseña" required>
-              
               <label for="rol" style="display: block; margin-bottom: 5px;">Rol</label>
               <select id="rol" name="rol" required style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                 <option value="">Seleccione un rol</option>
@@ -311,26 +399,22 @@
                   <option value="{{ rol.id }}">{{ rol.nombre }}</option>
                 {% endfor %}
               </select>
-              
               <label for="foto" class="form-label">Foto de perfil (opcional)</label>
               <input type="file" id="foto" name="foto" accept="image/*">
-              
               <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento (opcional)</label>
               <input type="date" id="fecha_nacimiento" name="fecha_nacimiento">
-              
               <div class="form-group checkbox-group">
                 <input type="checkbox" id="terminos" name="terminos" required>
                 <label for="terminos">Acepto los <a href="#">términos y condiciones</a></label>
               </div>
-              
               <button type="submit" class="btn-signup mt-4">Registrarse</button>
-              
               <p class="terms">Al registrarte, aceptas nuestros <a href="#">términos y condiciones</a>.</p>
             </form>
           </div>
         </div>
       </div>
       <div style="height: 80px;"></div>
+      <!-- Tabla de empleados -->
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Usuarios Existentes</h2>
       <div class="table-responsive fade-in">
         <table class="table table-striped">
@@ -353,12 +437,264 @@
               <td>{{ empleado.correo }}</td>
               <td>{{ empleado.rol.nombre }}</td>
               <td>
-                <a href="{% url 'eliminar_empleado' empleado.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                <!-- Botón para abrir el modal de edición -->
+                <button type="button" class="btn btn-sm btn-primary editar-emp-btn" 
+                        data-id="{{ empleado.id }}"
+                        data-nombre="{{ empleado.nombre }}"
+                        data-cedula="{{ empleado.cedula }}"
+                        data-telefono="{{ empleado.telefono }}"
+                        data-direccion="{{ empleado.direccion }}"
+                        data-email="{{ empleado.correo }}"
+                        data-rol="{{ empleado.rol.id }}"
+                        data-bs-toggle="modal" data-bs-target="#editarEmpleadoModal"
+                        style="transition: transform 0.3s;" 
+                        onmouseover="this.style.transform='scale(1.05)'" 
+                        onmouseout="this.style.transform='scale(1)'">
+                  Editar
+                </button>
+                <a href="{% url 'eliminar_empleado' empleado.id %}" class="btn btn-sm btn-danger" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Eliminar</a>
               </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="5" class="text-center">No hay empleados registrados.</td>
+              <td colspan="6" class="text-center">No hay empleados registrados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar empleado -->
+  <div class="modal fade" id="editarEmpleadoModal" tabindex="-1" aria-labelledby="editarEmpleadoModalLabel" aria-hidden="true" style="z-index: 1300;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="editarEmpleadoForm" method="POST" action="">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarEmpleadoModalLabel" style="color: var(--primary);">Editar Empleado</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="emp_nombre_edit" class="form-label">Nombre</label>
+              <input type="text" id="emp_nombre_edit" name="nombre" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="emp_cedula_edit" class="form-label">Cédula</label>
+              <input type="text" id="emp_cedula_edit" name="cedula" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="emp_telefono_edit" class="form-label">Teléfono</label>
+              <input type="text" id="emp_telefono_edit" name="telefono" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="emp_direccion_edit" class="form-label">Dirección</label>
+              <input type="text" id="emp_direccion_edit" name="direccion" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="emp_email_edit" class="form-label">Correo</label>
+              <input type="email" id="emp_email_edit" name="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="emp_rol_edit" class="form-label">Rol</label>
+              <select id="emp_rol_edit" name="rol" class="form-select" required>
+                <option value="">Seleccione un rol</option>
+                {% for rol in roles %}
+                  <option value="{{ rol.id }}">{{ rol.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Cancelar</button>
+            <button type="submit" class="btn btn-primary" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Actualizar Empleado</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sección de Gestión de Membresías -->
+  <div class="main-content" id="membresiaContent" style="display: none;">
+    <div class="content-wrapper container fade-in">
+      <!-- Formulario para registrar plan de membresía -->
+      <div class="container-registro">
+        <div class="row-registro">
+          <div class="form-section">
+            <h2>Crear Plan de Membresía</h2>
+            <form action="{% url 'registrar_plan_membresia' %}" method="POST">
+              {% csrf_token %}
+              <input type="text" id="nombre" name="nombre" placeholder="Nombre del plan" required>
+              <textarea id="descripcion" name="descripcion" placeholder="Descripción" required></textarea>
+              <input type="number" id="precio" name="precio" placeholder="Precio" step="0.01" required>
+              <input type="number" id="duracion_meses" name="duracion_meses" placeholder="Duración (meses)" required>
+              <button type="submit" class="btn-submit mt-4">Registrar Plan</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div style="height: 80px;"></div>
+      <!-- Tabla de planes -->
+      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Planes Existentes</h2>
+      <div class="table-responsive fade-in">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Precio</th>
+              <th>Duración (meses)</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for plan in planes %}
+            <tr>
+              <td>{{ plan.id }}</td>
+              <td>{{ plan.nombre }}</td>
+              <td>{{ plan.descripcion }}</td>
+              <td>{{ plan.precio }}</td>
+              <td>{{ plan.duracion_meses }}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-primary editar-plan-btn" 
+                        data-id="{{ plan.id }}"
+                        data-nombre="{{ plan.nombre }}"
+                        data-descripcion="{{ plan.descripcion }}"
+                        data-precio="{{ plan.precio }}"
+                        data-duracion="{{ plan.duracion_meses }}"
+                        data-bs-toggle="modal" data-bs-target="#editarPlanModal"
+                        style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  Editar
+                </button>
+                <a href="{% url 'eliminar_plan' plan.id %}" class="btn btn-sm btn-danger" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  Eliminar
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center">No hay planes registrados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar plan de membresía -->
+  <div class="modal fade" id="editarPlanModal" tabindex="-1" aria-labelledby="editarPlanModalLabel" aria-hidden="true" style="z-index: 1300;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="editarPlanForm" method="POST" action="">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarPlanModalLabel" style="color: var(--primary);">Editar Plan de Membresía</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="plan_nombre_edit" class="form-label">Nombre</label>
+              <input type="text" id="plan_nombre_edit" name="nombre" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="plan_descripcion_edit" class="form-label">Descripción</label>
+              <textarea id="plan_descripcion_edit" name="descripcion" class="form-control" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="plan_precio_edit" class="form-label">Precio</label>
+              <input type="number" step="0.01" id="plan_precio_edit" name="precio" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="plan_duracion_edit" class="form-label">Duración (meses)</label>
+              <input type="number" id="plan_duracion_edit" name="duracion_meses" class="form-control" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Cancelar</button>
+            <button type="submit" class="btn btn-primary" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Actualizar Plan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sección de Gestión de Equipos -->
+  <div class="main-content" id="equipoContent" style="display: none;">
+    <div class="content-wrapper container fade-in">
+      <!-- Formulario para registrar equipo -->
+      <div class="container-registro">
+        <div class="row-registro">
+          <div class="form-section">
+            <h2>Registrar Equipo</h2>
+            <form action="{% url 'registrar_equipo' %}" method="POST">
+              {% csrf_token %}
+              <input type="text" id="nombre" name="nombre" placeholder="Nombre de la máquina" required>
+              <textarea id="descripcion" name="descripcion" placeholder="Descripción (opcional)"></textarea>
+              <input type="text" id="tipo" name="tipo" placeholder="Tipo (ej. Cardio, Pesas, etc.)">
+              <label for="estado" style="display: block; margin-bottom: 5px;">Estado</label>
+              <select id="estado" name="estado" required style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <option value="DISP">Disponible</option>
+                <option value="MTTO">En mantenimiento</option>
+                <option value="FUERA">Fuera de servicio</option>
+              </select>
+              <label for="cantidad" style="display: block; margin-bottom: 5px;">Cantidad</label>
+              <input type="number" id="cantidad" name="cantidad" placeholder="Cantidad de máquinas" required>
+              <label for="fecha_ultima_revision" style="display: block; margin-bottom: 5px;">Fecha de última revisión (opcional)</label>
+              <input type="date" id="fecha_ultima_revision" name="fecha_ultima_revision">
+              <button type="submit" class="btn-submit mt-4">Registrar Equipo</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div style="height: 80px;"></div>
+      <!-- Tabla de equipos -->
+      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Equipos Registrados</h2>
+      <div class="table-responsive fade-in">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Cantidad</th>
+              <th>Fecha Última Revisión</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for equipo in equipos %}
+            <tr>
+              <td>{{ equipo.id }}</td>
+              <td>{{ equipo.nombre }}</td>
+              <td>{{ equipo.descripcion }}</td>
+              <td>{{ equipo.tipo }}</td>
+              <td>{{ equipo.get_estado_display }}</td>
+              <td>{{ equipo.cantidad }}</td>
+              <td>{{ equipo.fecha_ultima_revision }}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-primary editar-btn" 
+                        data-id="{{ equipo.id }}"
+                        data-estado="{{ equipo.estado }}"
+                        data-cantidad="{{ equipo.cantidad }}"
+                        data-fecha="{{ equipo.fecha_ultima_revision|date:'Y-m-d' }}"
+                        data-bs-toggle="modal" data-bs-target="#editarEquipoModal"
+                        style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  Editar
+                </button>
+                <a href="{% url 'eliminar_equipo' equipo.id %}" class="btn btn-sm btn-danger" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  Eliminar
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center">No hay equipos registrados.</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -367,10 +703,54 @@
     </div>
   </div>
   
+  <!-- Modal para editar equipo -->
+  <div class="modal fade" id="editarEquipoModal" tabindex="-1" aria-labelledby="editarEquipoModalLabel" aria-hidden="true" style="z-index: 1300;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="editarEquipoForm" method="POST" action="">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarEquipoModalLabel">Editar Equipo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="estado_edit" class="form-label">Estado</label>
+              <select id="estado_edit" name="estado" class="form-select" required>
+                <option value="DISP">Disponible</option>
+                <option value="MTTO">En mantenimiento</option>
+                <option value="FUERA">Fuera de servicio</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="cantidad_edit" class="form-label">Cantidad</label>
+              <input type="number" id="cantidad_edit" name="cantidad" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="fecha_ultima_revision_edit" class="form-label">Fecha de última revisión</label>
+              <input type="date" id="fecha_ultima_revision_edit" name="fecha_ultima_revision" class="form-control">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Cancelar</button>
+            <button type="submit" class="btn btn-primary" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Actualizar Equipo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Mostrar/ocultar el sidebar
+    document.getElementById('link-dashboard').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('dashboardContent').style.display = 'block';
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('empleadoContent').style.display = 'none';
+      document.getElementById('membresiaContent').style.display = 'none';
+      document.getElementById('equipoContent').style.display = 'none';
+    }); 
     document.getElementById('toggleSidebar').addEventListener('click', function() {
       if(document.body.classList.contains('sidebar-hidden')) {
         document.body.classList.remove('sidebar-hidden');
@@ -380,17 +760,88 @@
         document.body.classList.add('sidebar-hidden');
       }
     });
-    // Mostrar sección de roles
     document.getElementById('link-crear-rol').addEventListener('click', function(e) {
       e.preventDefault();
+      document.getElementById('dashboardContent').style.display = 'none';
       document.getElementById('mainContent').style.display = 'block';
       document.getElementById('empleadoContent').style.display = 'none';
+      document.getElementById('membresiaContent').style.display = 'none';
+      document.getElementById('equipoContent').style.display = 'none';
     });
-    // Mostrar sección de empleados
     document.getElementById('link-crear-empleado').addEventListener('click', function(e) {
       e.preventDefault();
+      document.getElementById('dashboardContent').style.display = 'none';
       document.getElementById('mainContent').style.display = 'none';
       document.getElementById('empleadoContent').style.display = 'block';
+      document.getElementById('membresiaContent').style.display = 'none';
+      document.getElementById('equipoContent').style.display = 'none';
+    });
+    document.getElementById('link-crear-membresia').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('dashboardContent').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('empleadoContent').style.display = 'none';
+      document.getElementById('membresiaContent').style.display = 'block';
+      document.getElementById('equipoContent').style.display = 'none';
+    });
+    document.getElementById('link-crear-equipo').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('dashboardContent').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('empleadoContent').style.display = 'none';
+      document.getElementById('membresiaContent').style.display = 'none';
+      document.getElementById('equipoContent').style.display = 'block';
+    });
+    var editarEquipoModal = document.getElementById('editarEquipoModal');
+    editarEquipoModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var equipoId = button.getAttribute('data-id');
+      var estado = button.getAttribute('data-estado');
+      var cantidad = button.getAttribute('data-cantidad');
+      var fecha = button.getAttribute('data-fecha');
+        
+      document.getElementById('estado_edit').value = estado;
+      document.getElementById('cantidad_edit').value = cantidad;
+      document.getElementById('fecha_ultima_revision_edit').value = fecha;
+        
+      var form = document.getElementById('editarEquipoForm');
+      form.action = "{% url 'editar_equipo' 0 %}".replace('0', equipoId);
+    });
+    var editarPlanModal = document.getElementById('editarPlanModal');
+    editarPlanModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var planId = button.getAttribute('data-id');
+      var nombre = button.getAttribute('data-nombre');
+      var descripcion = button.getAttribute('data-descripcion');
+      var precio = button.getAttribute('data-precio');
+      var duracion = button.getAttribute('data-duracion');
+      
+      document.getElementById('plan_nombre_edit').value = nombre;
+      document.getElementById('plan_descripcion_edit').value = descripcion;
+      document.getElementById('plan_precio_edit').value = precio;
+      document.getElementById('plan_duracion_edit').value = duracion;
+      
+      var form = document.getElementById('editarPlanForm');
+      form.action = "{% url 'editar_plan' 0 %}".replace('0', planId);
+    });
+    var editarEmpleadoModal = document.getElementById('editarEmpleadoModal');
+    editarEmpleadoModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var empId = button.getAttribute('data-id');
+      var nombre = button.getAttribute('data-nombre');
+      var cedula = button.getAttribute('data-cedula');
+      var telefono = button.getAttribute('data-telefono');
+      var direccion = button.getAttribute('data-direccion');
+      var email = button.getAttribute('data-email');
+      var rolId = button.getAttribute('data-rol');
+      document.getElementById('emp_nombre_edit').value = nombre;
+      document.getElementById('emp_cedula_edit').value = cedula;
+      document.getElementById('emp_telefono_edit').value = telefono;
+      document.getElementById('emp_direccion_edit').value = direccion;
+      document.getElementById('emp_email_edit').value = email;
+      document.getElementById('emp_rol_edit').value = rolId;
+      var form = document.getElementById('editarEmpleadoForm');
+      form.action = "{% url 'editar_empleado' 0 %}".replace('0', empId);
     });
   </script>
 </body>
