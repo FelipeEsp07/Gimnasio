@@ -11,7 +11,8 @@ from django.shortcuts import get_object_or_404
 from .models import Usuario, Rol, PlanMembresia, Equipo
 
 def home(request):
-    return render(request, 'home.html')
+    planes = PlanMembresia.objects.all()
+    return render(request, 'home.html', {'planes': planes})
 
 def inicio(request):
     return render(request, 'inicio.html')
@@ -241,6 +242,8 @@ def registrar_plan_membresia(request):
         descripcion = request.POST.get('descripcion')
         precio = request.POST.get('precio')
         duracion_meses = request.POST.get('duracion_meses')
+        imagen = request.FILES.get('imagen', None)
+
         
         if not nombre or not descripcion or not precio or not duracion_meses:
             messages.error(request, "Todos los campos son obligatorios.")
@@ -261,7 +264,8 @@ def registrar_plan_membresia(request):
             nombre=nombre,
             descripcion=descripcion,
             precio=precio,
-            duracion_meses=duracion_meses
+            duracion_meses=duracion_meses,
+            imagen=imagen
         )
         nuevo_plan.save()
         messages.success(request, "Plan de membresía registrado exitosamente.")

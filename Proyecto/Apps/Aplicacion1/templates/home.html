@@ -360,46 +360,25 @@
   </div>
 </section>
 
-<!-- Sección de Planes -->
+<!-- Sección de Planes de Membresía -->
 <section class="products-section text-center" id="products-section">
   <div class="container">
-    <h2 class="mb-5">Nuestros Planes</h2>
+    <h2>Nuestros Planes</h2>
     <div class="products-slider">
-      <!-- Plan Básico -->
-      <div class="product-card" style="background-image: url('../media/estaticas/basico.jpg');">
+      {% for plan in planes %}
+      <div class="product-card" style="background-image: url('{{ plan.imagen.url }}');">
         <div class="overlay"></div>
         <div class="card-content">
-          <h3>PLAN BÁSICO</h3>
-          <p>Entrena 4 veces a la semana</p>
-          <p class="price-old">$69.000</p>
-          <p class="price-new">$59.000</p>
+          <h3>{{ plan.nombre }}</h3>
+          <p>{{ plan.descripcion }}</p>
+          <p class="price-new">${{ plan.precio }}</p>
+          <p class="duration">Duración: {{ plan.duracion_meses }} meses</p>
           <a href="#" class="btn btn-warning">COMPRAR</a>
         </div>
       </div>
-
-      <!-- Plan Premium -->
-      <div class="product-card" style="background-image: url('../media/estaticas/premium.jpg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>PLAN PREMIUM</h3>
-          <p>Entrena cuando quieras y los días que quieras</p>
-          <p class="price-old">$89.000</p>
-          <p class="price-new">$79.000</p>
-          <a href="#" class="btn btn-warning">COMPRAR</a>
-        </div>
-      </div>
-
-      <!-- Plan Fit -->
-      <div class="product-card" style="background-image: url('../media/estaticas/fit.jpeg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>PLAN FIT</h3>
-          <p>Accede a máquinas exclusivas y entrenadores personales</p>
-          <p class="price-old">$109.000</p>
-          <p class="price-new">$99.000</p>
-          <a href="#" class="btn btn-warning">COMPRAR</a>
-        </div>
-      </div>
+      {% empty %}
+      <p>No hay planes registrados.</p>
+      {% endfor %}
     </div>
   </div>
 </section>
