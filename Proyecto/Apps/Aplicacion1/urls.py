@@ -20,6 +20,9 @@ urlpatterns = [
     path('registrar_equipo/', views.registrar_equipo, name='registrar_equipo'),
     path('eliminar_equipo/<int:id>/', views.eliminar_equipo, name='eliminar_equipo'),
     path('editar_equipo/<int:id>/', views.editar_equipo, name='editar_equipo'),
+    path('acceso/<str:token>/', views.registrar_acceso, name='registrar_acceso'),
+    path('dashboard_entrenador/', views.dashboard_entrenador, name='dashboard_entrenador'),
+    path('registrar_clase_grupal/', views.registrar_clase_grupal, name='registrar_clase_grupal'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

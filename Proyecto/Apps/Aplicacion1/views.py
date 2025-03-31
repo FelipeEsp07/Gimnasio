@@ -1,14 +1,14 @@
-from django.shortcuts import render
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from datetime import datetime
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils.dateparse import parse_date
-from django.shortcuts import get_object_or_404
+import qrcode
+from io import BytesIO
+from django.core.files import File
 
-
-from .models import Usuario, Rol, PlanMembresia, Equipo
+from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, Empleado
 
 def home(request):
     planes = PlanMembresia.objects.all()
@@ -53,6 +53,15 @@ def eliminar_rol(request, id):
     messages.success(request, "Rol eliminado exitosamente.")
     return redirect('dashboard_admin')
 
+def generar_qr(usuario):
+    data = f"http://127.0.0.1:8000/acceso/{usuario.id}-{usuario.correo}"
+    qr_img = qrcode.make(data)
+    buffer = BytesIO()
+    qr_img.save(buffer, format="PNG")
+    buffer.seek(0)
+    file_name = f"qr_{usuario.id}.png"
+    usuario.qr_code.save(file_name, File(buffer), save=True)
+
 def reg_clientes(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -71,7 +80,6 @@ def reg_clientes(request):
             foto_url = fs.url(filename)
 
         errores = []
-
         if '@' not in email:
             errores.append("El correo electrónico debe contener un '@'.")
         if Usuario.objects.filter(correo=email).exists():
@@ -105,7 +113,7 @@ def reg_clientes(request):
             rol=Rol.objects.get(nombre='Clientes')
         )
         nuevo_usuario.save()
-
+        generar_qr(nuevo_usuario)
         messages.success(request, 'Usuario registrado exitosamente.')
         return redirect('login_clientes')
 
@@ -129,7 +137,6 @@ def reg_empleados(request):
             foto_url = fs.url(filename)
 
         errores = []
-
         if '@' not in email:
             errores.append("El correo electrónico debe contener un '@'.")
         if Usuario.objects.filter(correo=email).exists():
@@ -154,7 +161,7 @@ def reg_empleados(request):
                 messages.error(request, error)
             return redirect('reg_empleados')
 
-        rol = Rol.objects.get(id=rol_id)
+        rol = get_object_or_404(Rol, id=rol_id)
 
         nuevo_usuario = Usuario(
             nombre=nombre,
@@ -169,7 +176,8 @@ def reg_empleados(request):
             rol=rol,
         )
         nuevo_usuario.save()
-
+        generar_qr(nuevo_usuario)
+        
         messages.success(request, 'Usuario registrado exitosamente.')
         return redirect('dashboard_admin')
 
@@ -188,7 +196,9 @@ def login_clientes(request):
             request.session['cedula_cliente'] = usuario.cedula  
 
             if usuario.rol.nombre == 'Administrador':
-                return redirect('dashboard_admin') 
+                return redirect('dashboard_admin')
+            elif usuario.rol.nombre == 'Entrenador':
+                return redirect('dashboard_entrenador')
             else:
                 return redirect('inicio')
         else:
@@ -201,6 +211,8 @@ def dashboard_admin(request):
     empleados = Usuario.objects.all()
     planes = PlanMembresia.objects.all()
     equipos = Equipo.objects.all()
+    access_logs = AccessLog.objects.order_by('-fecha_ingreso')
+
 
     context = {
         'roles': roles,
@@ -211,6 +223,8 @@ def dashboard_admin(request):
         'total_roles': roles.count(),
         'total_membresias': planes.count(),
         'total_equipos': equipos.count(),
+        'access_logs': access_logs,
+
     }
     return render(request, 'dash_admin.html', context)
 
@@ -350,3 +364,79 @@ def editar_equipo(request, id):
         return redirect('dashboard_admin')
     
     return render(request, 'editar_equipo.html', {'equipo': equipo})
+
+def registrar_acceso(request, token):
+    try:
+        usuario_id, correo = token.split("-")
+        usuario = get_object_or_404(Usuario, id=usuario_id, correo=correo)
+    except Exception:
+        messages.error(request, "Código QR inválido.")
+        return redirect('login_clientes')
+    
+    AccessLog.objects.create(
+        usuario=usuario,
+        correo=usuario.correo,
+        ip_address=request.META.get('REMOTE_ADDR')
+    )
+    
+    messages.success(request, f"Bienvenido, {usuario.nombre}. Acceso registrado.")
+    return redirect('inicio')
+
+def dashboard_entrenador(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login_clientes')
+    
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        messages.error(request, "El usuario no existe.")
+        return redirect('login_clientes')
+    
+    context = {
+        'usuario': usuario,
+    }
+    return render(request, 'dash_entrenador.html', context)
+
+def registrar_clase_grupal(request):
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        descripcion = request.POST.get("descripcion")
+        dia = request.POST.get("dia")    
+        hora = request.POST.get("hora")         
+        cupo_maximo = request.POST.get("cupo_maximo")
+        
+        try:
+            cupo_maximo = int(cupo_maximo)
+        except (TypeError, ValueError):
+            messages.error(request, "El cupo máximo debe ser un número entero válido.")
+            return redirect("registrar_clase_grupal")
+        
+        usuario_id = request.session.get('usuario_id')
+        if not usuario_id:
+            messages.error(request, "No se encontró sesión del usuario. Inicia sesión.")
+            return redirect("login_clientes")
+        
+        try:
+            usuario = Usuario.objects.get(id=usuario_id)
+        except Usuario.DoesNotExist:
+            messages.error(request, "El usuario no existe.")
+            return redirect("login_clientes")
+        
+        if usuario.rol.nombre != "Entrenador":
+            messages.error(request, "No tienes permisos para registrar una clase grupal.")
+            return redirect("dashboard_entrenador")
+        
+        ClaseGrupal.objects.create(
+            nombre=nombre,
+            descripcion=descripcion,
+            dia=dia,
+            hora=hora,
+            cupo_maximo=cupo_maximo,
+            instructor=usuario
+        )
+        
+        messages.success(request, "Clase grupal registrada exitosamente.")
+        return redirect("dashboard_entrenador") 
+        
+    return render(request, "dash_entrenador.html")

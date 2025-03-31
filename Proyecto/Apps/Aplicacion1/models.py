@@ -1,10 +1,12 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 class Rol(models.Model):
     nombre = models.CharField(max_length=50)
 
     def __str__(self):
         return self.nombre
+    
 
 class Usuario(models.Model):
     nombre = models.CharField(max_length=100)
@@ -17,9 +19,11 @@ class Usuario(models.Model):
     fecha_nacimiento = models.DateField(null=True, blank=True)
     aceptar_condiciones = models.BooleanField(default=False)
     rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
 
     def __str__(self):
         return self.nombre
+    
 
 class Empleado(models.Model):
     usuario = models.OneToOneField('Usuario', on_delete=models.CASCADE)
@@ -29,6 +33,7 @@ class Empleado(models.Model):
     def __str__(self):
         return f'{self.usuario.nombre} - {self.puesto}'
 
+
 class PlanMembresia(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField()
@@ -37,6 +42,7 @@ class PlanMembresia(models.Model):
     imagen = models.ImageField(upload_to='planes_membresia/', null=True, blank=True)
     def __str__(self):
         return self.nombre
+
 
 class Equipo(models.Model):
     ESTADO_CHOICES = [
@@ -54,3 +60,42 @@ class Equipo(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.get_estado_display()})"
+    
+
+class AccessLog(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, verbose_name="Usuario")
+    correo = models.EmailField(verbose_name="Correo del Usuario")
+    fecha_ingreso = models.DateField(auto_now_add=True, verbose_name="Fecha de Ingreso")
+    hora_ingreso = models.TimeField(auto_now_add=True, verbose_name="Hora de Ingreso")
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="Dirección IP")
+
+    def __str__(self):
+        return f"Acceso de {self.usuario.nombre} el {self.fecha_ingreso} a las {self.hora_ingreso}"
+    
+
+class ClaseGrupal(models.Model):
+    class DiaSemana(models.TextChoices):
+        LUNES = 'LU', _('Lunes')
+        MARTES = 'MA', _('Martes')
+        MIERCOLES = 'MI', _('Miércoles')
+        JUEVES = 'JU', _('Jueves')
+        VIERNES = 'VI', _('Viernes')
+        SABADO = 'SA', _('Sábado')
+        DOMINGO = 'DO', _('Domingo')
+
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    dia = models.CharField(max_length=2, choices=DiaSemana.choices, help_text="Día en que se dicta la clase")
+    hora = models.TimeField(help_text="Hora de inicio de la clase")
+    cupo_maximo = models.PositiveIntegerField(help_text="Número máximo de asistentes")
+    instructor = models.ForeignKey(
+        'Usuario', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        help_text="Entrenador encargado de la clase"
+    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nombre} - {self.get_dia_display()} a las {self.hora}"
