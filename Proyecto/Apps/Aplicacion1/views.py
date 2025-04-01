@@ -1,21 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from datetime import datetime
-from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils.dateparse import parse_date
 import qrcode
 from io import BytesIO
 from django.core.files import File
 
-from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, Empleado
+from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal
 
 def home(request):
     planes = PlanMembresia.objects.all()
-    return render(request, 'home.html', {'planes': planes})
-
-def inicio(request):
-    return render(request, 'inicio.html')
+    clases_grupales = ClaseGrupal.objects.all()
+    
+    context = {
+        'planes': planes,
+        'clases_grupales': clases_grupales
+    }
+    return render(request, 'home.html', context)
 
 def authenticate_user(correo, password):
     """Autenticación personalizada de usuario."""
@@ -72,12 +74,7 @@ def reg_clientes(request):
         password = request.POST.get('password')
         aceptar_condiciones = request.POST.get('terminos') is not None
 
-        foto_url = None
-        if 'foto' in request.FILES:
-            foto = request.FILES['foto']
-            fs = FileSystemStorage()
-            filename = fs.save(foto.name, foto)
-            foto_url = fs.url(filename)
+        foto = request.FILES.get('foto', None)
 
         errores = []
         if '@' not in email:
@@ -107,7 +104,7 @@ def reg_clientes(request):
             direccion=direccion,
             correo=email,
             contraseña=make_password(password),
-            foto_perfil=foto_url,
+            foto_perfil=foto,
             fecha_nacimiento=fecha_nacimiento,
             aceptar_condiciones=aceptar_condiciones,
             rol=Rol.objects.get(nombre='Clientes')
@@ -129,12 +126,7 @@ def reg_empleados(request):
         password = request.POST.get('password')
         aceptar_condiciones = request.POST.get('terminos') is not None
 
-        foto_url = None
-        if 'foto' in request.FILES:
-            foto = request.FILES['foto']
-            fs = FileSystemStorage()
-            filename = fs.save(foto.name, foto)
-            foto_url = fs.url(filename)
+        foto = request.FILES.get('foto', None)
 
         errores = []
         if '@' not in email:
@@ -170,7 +162,7 @@ def reg_empleados(request):
             direccion=direccion,
             correo=email,
             contraseña=make_password(password),
-            foto_perfil=foto_url,
+            foto_perfil=foto,
             fecha_nacimiento=fecha_nacimiento,
             aceptar_condiciones=aceptar_condiciones,
             rol=rol,
@@ -200,7 +192,7 @@ def login_clientes(request):
             elif usuario.rol.nombre == 'Entrenador':
                 return redirect('dashboard_entrenador')
             else:
-                return redirect('inicio')
+                return redirect('dashboard_cliente')
         else:
             messages.error(request, "Credenciales inválidas")
     
@@ -380,7 +372,7 @@ def registrar_acceso(request, token):
     )
     
     messages.success(request, f"Bienvenido, {usuario.nombre}. Acceso registrado.")
-    return redirect('inicio')
+    return redirect('acceso_usuario')
 
 def dashboard_entrenador(request):
     usuario_id = request.session.get('usuario_id')
@@ -393,8 +385,11 @@ def dashboard_entrenador(request):
         messages.error(request, "El usuario no existe.")
         return redirect('login_clientes')
     
+    clases = ClaseGrupal.objects.filter(instructor=usuario)
+    
     context = {
         'usuario': usuario,
+        'clases': clases,
     }
     return render(request, 'dash_entrenador.html', context)
 
@@ -427,16 +422,99 @@ def registrar_clase_grupal(request):
             messages.error(request, "No tienes permisos para registrar una clase grupal.")
             return redirect("dashboard_entrenador")
         
+        imagen = request.FILES.get("imagen")
+        
         ClaseGrupal.objects.create(
             nombre=nombre,
             descripcion=descripcion,
             dia=dia,
             hora=hora,
             cupo_maximo=cupo_maximo,
-            instructor=usuario
+            instructor=usuario,
+            imagen=imagen
         )
-        
         messages.success(request, "Clase grupal registrada exitosamente.")
-        return redirect("dashboard_entrenador") 
-        
+        return redirect("dashboard_entrenador")     
     return render(request, "dash_entrenador.html")
+
+def eliminar_clase_grupal(request, id):
+    clase = get_object_or_404(ClaseGrupal, id=id)
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "No se encontró sesión del usuario. Inicia sesión.")
+        return redirect("login_clientes")
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        messages.error(request, "El usuario no existe.")
+        return redirect("login_clientes")
+    
+    if clase.instructor != usuario:
+        messages.error(request, "No tienes permisos para eliminar esta clase.")
+        return redirect("dashboard_entrenador")
+    
+    clase.delete()
+    messages.success(request, "Clase grupal eliminada exitosamente.")
+    return redirect("dashboard_entrenador")
+
+def editar_clase_grupal(request, id):
+    clase = get_object_or_404(ClaseGrupal, id=id)
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "No se encontró sesión del usuario. Inicia sesión.")
+        return redirect("login_clientes")
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        messages.error(request, "El usuario no existe.")
+        return redirect("login_clientes")
+    
+    if clase.instructor != usuario:
+        messages.error(request, "No tienes permisos para editar esta clase.")
+        return redirect("dashboard_entrenador")
+    
+    if request.method == "POST":
+        clase.nombre = request.POST.get("nombre")
+        clase.descripcion = request.POST.get("descripcion")
+        clase.dia = request.POST.get("dia")
+        clase.hora = request.POST.get("hora")
+        try:
+            clase.cupo_maximo = int(request.POST.get("cupo_maximo"))
+        except (TypeError, ValueError):
+            messages.error(request, "El cupo máximo debe ser un número entero válido.")
+            return redirect("dashboard_entrenador")
+        
+        clase.save()
+        messages.success(request, "Clase grupal actualizada exitosamente.")
+        return redirect("dashboard_entrenador")
+    
+    return render(request, "editar_clase.html", {"clase": clase})
+
+def dashboard_cliente(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        messages.error(request, "El usuario no existe.")
+        return redirect('login_clientes')
+    
+    context = {'cliente': usuario}
+    return render(request, 'dash_cliente.html', context)
+
+def acceso_usuario(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para ver esta página.")
+        return redirect('login_clientes')
+    
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        messages.error(request, "El usuario no existe.")
+        return redirect('login_clientes')
+    
+    return render(request, 'acceso_usuario.html', {'usuario': usuario})
+

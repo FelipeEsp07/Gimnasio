@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from datetime import date, timedelta
 
 class Rol(models.Model):
     nombre = models.CharField(max_length=50)
@@ -95,7 +96,29 @@ class ClaseGrupal(models.Model):
         blank=True, 
         help_text="Entrenador encargado de la clase"
     )
+    imagen = models.ImageField(upload_to='clases_grupales/', blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.nombre} - {self.get_dia_display()} a las {self.hora}"
+
+    def get_next_date(self):
+        dias_semana = {
+            'Lunes': 0,
+            'Martes': 1,
+            'Miércoles': 2,
+            'Jueves': 3,
+            'Viernes': 4,
+            'Sábado': 5,
+            'Domingo': 6,
+        }
+        today = date.today()
+        target_weekday = dias_semana.get(self.get_dia_display(), None)
+        if target_weekday is None:
+            return None
+
+        days_ahead = target_weekday - today.weekday()
+        if days_ahead <= 0:
+            days_ahead += 7
+        next_date = today + timedelta(days=days_ahead)
+        return next_date

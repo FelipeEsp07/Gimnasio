@@ -5,7 +5,6 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('inicio/', views.inicio, name='inicio'),
     path('crear_rol/', views.crear_rol, name='crear_rol'),
     path('eliminar_rol/<int:id>/', views.eliminar_rol, name='eliminar_rol'),
     path('reg_clientes/', views.reg_clientes, name='reg_clientes'),
@@ -23,6 +22,10 @@ urlpatterns = [
     path('acceso/<str:token>/', views.registrar_acceso, name='registrar_acceso'),
     path('dashboard_entrenador/', views.dashboard_entrenador, name='dashboard_entrenador'),
     path('registrar_clase_grupal/', views.registrar_clase_grupal, name='registrar_clase_grupal'),
+    path('editar_clase_grupal/<int:id>/', views.editar_clase_grupal, name='editar_clase_grupal'),
+    path('eliminar_clase_grupal/<int:id>/', views.eliminar_clase_grupal, name='eliminar_clase_grupal'),
+    path('dashboard_cliente/', views.dashboard_cliente, name='dashboard_cliente'),
+    path('acceso_usaurio/', views.acceso_usuario, name='acceso_usuario'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

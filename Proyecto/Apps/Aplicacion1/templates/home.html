@@ -16,39 +16,40 @@
       background-color: #121212;
       color: #fff;
     }
-  
+
     .navbar {
       background-color: rgba(0, 0, 0, 0.9);
       padding: 20px 0;
       transition: background-color 0.3s ease;
     }
-  
+
     .navbar-brand {
       color: #e63946;
       font-weight: bold;
       font-size: 40px;
     }
-  
+
     .navbar-brand:hover {
       color: #fff;
     }
-  
+
     .navbar-nav .nav-link {
       color: #fff;
       font-size: 20px;
       margin: 0 18px;
       transition: color 0.3s ease;
     }
-  
+
     .navbar-nav .nav-link:hover {
       color: #e63946;
     }
-  
+
     .services-section,
-    .products-section {
+    .products-section,
+    .group-classes-section {
       padding: 100px 0;
     }
-  
+
     .hero {
       position: relative;
       height: 100vh;
@@ -61,7 +62,7 @@
       align-items: center;
       text-align: center;
     }
-  
+
     .hero::before {
       content: '';
       position: absolute;
@@ -72,12 +73,12 @@
       background-color: rgba(0, 0, 0, 0.75);
       z-index: 0;
     }
-  
+
     .hero-content {
       position: relative;
       z-index: 1;
     }
-  
+
     .hero h1 {
       font-size: 4.5rem;
       font-weight: bold;
@@ -85,13 +86,13 @@
       color: #e63946;
       animation: fadeIn 1s ease;
     }
-  
+
     .hero p {
       font-size: 2rem;
       margin-bottom: 40px;
       animation: fadeIn 1.2s ease;
     }
-  
+
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -102,7 +103,7 @@
         transform: translateY(0);
       }
     }
-  
+
     .btn-primary {
       background-color: #e63946;
       border: none;
@@ -112,124 +113,13 @@
       font-size: 18px;
       transition: background-color 0.3s ease;
     }
-  
+
     .btn-primary:hover {
       background-color: #c92a38;
     }
-  
+
     .services-slider,
-    .products-slider {
-      display: flex;
-      overflow-x: auto;
-      gap: 24px;
-      padding-bottom: 20px;
-      scroll-behavior: smooth;
-      scroll-snap-type: x mandatory;
-      scroll-padding: 20px;
-    }
-  
-    .service-card,
-    .product-card {
-      flex: 0 0 calc(33% - 24px);
-      min-width: 320px;
-      background-color: #1a1a1a;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.6);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      color: #fff;
-      scroll-snap-align: center;  
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-  
-    .service-card:hover,
-    .product-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.7);
-    }
-  
-    .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: 0;
-    }
-  
-    .card-content {
-      position: relative;
-      z-index: 1;
-    }
-  
-    .btn-warning {
-      background-color: #e63946;
-      color: #fff;
-      font-weight: bold;
-      padding: 14px 30px;
-      border-radius: 30px;
-      font-size: 18px;
-      transition: background-color 0.3s ease;
-      border: none;
-    }
-  
-    .btn-warning:hover {
-      background-color: #c92a38;
-    }
-  
-    .price-old {
-      text-decoration: line-through;
-      color: #aaa;
-      font-size: 16px;
-      margin-bottom: 0;
-    }
-  
-    .price-new {
-      color: #e63946;
-      font-size: 22px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-  
-    .footer {
-      background-color: #000;
-      padding: 16px;
-      text-align: center;
-      color: #aaa;
-      font-size: 14px;
-    }
-  
-    .services-slider::-webkit-scrollbar,
-    .products-slider::-webkit-scrollbar {
-      height: 8px;
-    }
-  
-    .services-slider::-webkit-scrollbar-track,
-    .products-slider::-webkit-scrollbar-track {
-      background: #222;
-      border-radius: 10px;
-    }
-  
-    .services-slider::-webkit-scrollbar-thumb,
-    .products-slider::-webkit-scrollbar-thumb {
-      background: #e63946;
-      border-radius: 10px;
-    }
-  
-    .services-slider::-webkit-scrollbar-thumb:hover,
-    .products-slider::-webkit-scrollbar-thumb:hover {
-      background: #c92a38;
-    }
-
-    .group-classes-section {
-     padding: 100px 0;
-    }
-
+    .products-slider,
     .group-classes-slider {
       display: flex;
       overflow-x: auto;
@@ -240,13 +130,15 @@
       scroll-padding: 20px;
     }
 
+    .service-card,
+    .product-card,
     .group-class-card {
       flex: 0 0 calc(33% - 24px);
       min-width: 320px;
       background-color: #1a1a1a;
       padding: 24px;
       border-radius: 16px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
       overflow: hidden;
@@ -257,34 +149,137 @@
       background-repeat: no-repeat;
     }
 
+    .service-card:hover,
+    .product-card:hover,
     .group-class-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.7);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.7);
     }
 
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-warning {
+      background-color: #e63946;
+      color: #fff;
+      font-weight: bold;
+      padding: 14px 30px;
+      border-radius: 30px;
+      font-size: 18px;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+
+    .btn-warning:hover {
+      background-color: #c92a38;
+    }
+
+    .price-old {
+      text-decoration: line-through;
+      color: #aaa;
+      font-size: 16px;
+      margin-bottom: 0;
+    }
+
+    .price-new {
+      color: #e63946;
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .footer {
+      background-color: #000;
+      padding: 16px;
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .services-slider::-webkit-scrollbar,
+    .products-slider::-webkit-scrollbar,
     .group-classes-slider::-webkit-scrollbar {
       height: 8px;
     }
 
+    .services-slider::-webkit-scrollbar-track,
+    .products-slider::-webkit-scrollbar-track,
     .group-classes-slider::-webkit-scrollbar-track {
       background: #222;
       border-radius: 10px;
     }
 
+    .services-slider::-webkit-scrollbar-thumb,
+    .products-slider::-webkit-scrollbar-thumb,
     .group-classes-slider::-webkit-scrollbar-thumb {
       background: #e63946;
       border-radius: 10px;
     }
 
+    .services-slider::-webkit-scrollbar-thumb:hover,
+    .products-slider::-webkit-scrollbar-thumb:hover,
     .group-classes-slider::-webkit-scrollbar-thumb:hover {
       background: #c92a38;
     }
 
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .btn-custom {
+      display: inline-block;
+      background-color: #f39c12;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 30px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-custom:hover {
+      background-color: #d68910;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-animated {
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
-  
 </head>
 <body>
-
 <!-- HEADER -->
 <nav class="navbar navbar-expand-lg fixed-top">
   <div class="container">
@@ -302,7 +297,6 @@
     </div>
   </div>
 </nav>
-
 <!-- HERO -->
 <section class="hero" id="hero">
   <div class="hero-content">
@@ -311,69 +305,65 @@
     <a href="{% url 'reg_clientes' %}" class="btn btn-primary">Inscríbete ya</a>
   </div>
 </section>
-
  <!-- Sección de Servicios -->
 <section class="services-section text-center" id="services-section">
   <div class="container">
     <h2 class="mb-5">Sesiones personalizadas</h2>
-    <div class="services-slider">
+    <div class="row">
       <!-- Servicio de Entrenamiento Personal -->
-      <div class="service-card" style="background-image: url('../media/estaticas/ent_personal.jpg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>ENTRENAMIENTO PERSONAL</h3>
-          <p>Uso de maquinas y espacios para el entrenamiento</p>
-          <a href="#" class="btn btn-warning">CONOCER MÁS</a>
+      <div class="col-md-4">
+        <div class="card group-class-card shadow-lg">
+          <img src="../media/estaticas/ent_personal.jpg" class="card-img-top" alt="Entrenamiento Personal">
+          <div class="card-body">
+            <h3 class="card-title">ENTRENAMIENTO PERSONAL</h3>
+            <p class="card-text">Uso de máquinas y espacios para el entrenamiento</p>
+            <a href="#" class="btn btn-warning">CONOCER MÁS</a>
+          </div>
         </div>
       </div>
-
-      <!-- Servicio de Entrenadores -->
-      <div class="service-card" style="background-image: url('../media/estaticas/ent_personal.jpg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>ENTRENADORES PERSONALES</h3>
-          <p>Accede a nuestros entranadores personales</p>
-          <a href="#" class="btn btn-warning">CONOCER MÁS</a>
+      <!-- Servicio de Clases Grupales (opcional en esta sección si se desea) -->
+      <div class="col-md-4">
+        <div class="card group-class-card shadow-lg">
+          <img src="../media/estaticas/grupales.jpg" class="card-img-top" alt="Clases Grupales">
+          <div class="card-body">
+            <h3 class="card-title">CLASES GRUPALES</h3>
+            <p class="card-text">Motívate con nuestras sesiones en grupo.</p>
+            <a href="#" class="btn btn-warning">CONOCER MÁS</a>
+          </div>
         </div>
       </div>
-
-      <!-- Servicio de Clases Grupales -->
-      <div class="service-card" style="background-image: url('../media/estaticas/grupales.jpg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>CLASES GRUPALES</h3>
-          <p>Motívate con nuestras sesiones en grupo.</p>
-          <a href="#" class="btn btn-warning">CONOCER MÁS</a>
-        </div>
-      </div>
-
       <!-- Servicio de Nutrición -->
-      <div class="service-card" style="background-image: url('../media/estaticas/nutricion.png');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>ASESORÍA NUTRICIONAL</h3>
-          <p>Planes de alimentación diseñados para tus objetivos.</p>
-          <a href="#" class="btn btn-warning">CONOCER MÁS</a>
+      <div class="col-md-4">
+        <div class="card group-class-card shadow-lg">
+          <img src="../media/estaticas/nutricion.png" class="card-img-top" alt="Asesoría Nutricional">
+          <div class="card-body">
+            <h3 class="card-title">ASESORÍA NUTRICIONAL</h3>
+            <p class="card-text">Planes de alimentación diseñados para tus objetivos.</p>
+            <a href="#" class="btn btn-warning">CONOCER MÁS</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
 <!-- Sección de Planes de Membresía -->
 <section class="products-section text-center" id="products-section">
   <div class="container">
     <h2>Nuestros Planes</h2>
-    <div class="products-slider">
+    <div class="row">
       {% for plan in planes %}
-      <div class="product-card" style="background-image: url('{{ plan.imagen.url }}');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>{{ plan.nombre }}</h3>
-          <p>{{ plan.descripcion }}</p>
-          <p class="price-new">${{ plan.precio }}</p>
-          <p class="duration">Duración: {{ plan.duracion_meses }} meses</p>
-          <a href="#" class="btn btn-warning">COMPRAR</a>
+      <div class="col-md-4">
+        <div class="card group-class-card shadow-lg">
+          {% if plan.imagen %}
+          <img src="{{ plan.imagen.url }}" class="card-img-top" alt="{{ plan.nombre }}">
+          {% endif %}
+          <div class="card-body">
+            <h3 class="card-title">{{ plan.nombre }}</h3>
+            <p class="card-text">{{ plan.descripcion }}</p>
+            <p class="price-new">${{ plan.precio }}</p>
+            <p class="duration">Duración: {{ plan.duracion_meses }} meses</p>
+            <a href="#hero" class="btn btn-warning">COMPRAR</a>
+          </div>
         </div>
       </div>
       {% empty %}
@@ -382,51 +372,39 @@
     </div>
   </div>
 </section>
-
 <!-- Sección de Clases Grupales -->
 <section class="group-classes-section text-center" id="group-classes-section">
   <div class="container">
     <h2 class="mb-5">Clases Grupales</h2>
-    <div class="group-classes-slider">
-      <!-- Clase de Yoga -->
-      <div class="group-class-card" style="background-image: url('../media/estaticas/yoga.jpg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>YOGA</h3>
-          <p>Relaja tu mente y fortalece tu cuerpo con nuestras clases de yoga.</p>
-          <a href="#" class="btn btn-warning">VER HORARIOS</a>
+    <div class="row">
+      {% for clase in clases_grupales %}
+      <div class="col-md-4">
+        <div class="card group-class-card shadow-lg">
+          {% if clase.imagen %}
+          <img src="{{ clase.imagen.url }}" class="card-img-top" alt="{{ clase.nombre }}">
+          {% endif %}
+          <div class="card-body">
+            <h3 class="card-title">{{ clase.nombre }}</h3>
+            <p class="card-text"><strong>Descripción:</strong> {{ clase.descripcion }}</p>
+            <p><strong>Día:</strong> {{ clase.get_dia_display }} - {{ clase.get_next_date|date:"d/m/Y" }}</p>
+            <p><strong>Hora:</strong> {{ clase.hora|time:"h:i A" }}</p>
+            <p><strong>Cupo Máximo:</strong> {{ clase.cupo_maximo }}</p>
+            <p><strong>Instructor:</strong> {{ clase.instructor.nombre }} {{ clase.instructor.apellido }}</p>
+            <a href="#hero" class="btn btn-warning btn-animated mt-3">Tomar Clase</a>
+          </div>
         </div>
       </div>
-
-      <!-- Clase de Pilates -->
-      <div class="group-class-card" style="background-image: url('../media/estaticas/pilates.jpg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>PILATES</h3>
-          <p>Mejora tu flexibilidad y fuerza con nuestras sesiones de pilates.</p>
-          <a href="#" class="btn btn-warning">VER HORARIOS</a>
-        </div>
-      </div>
-
-      <!-- Clase de Zumba -->
-      <div class="group-class-card" style="background-image: url('../media/estaticas/zumba.jpg');">
-        <div class="overlay"></div>
-        <div class="card-content">
-          <h3>ZUMBA</h3>
-          <p>Baila y diviértete mientras te pones en forma con nuestras clases de zumba.</p>
-          <a href="#" class="btn btn-warning">VER HORARIOS</a>
-        </div>
-      </div>
+      {% empty %}
+      <p>No hay clases grupales registradas.</p>
+      {% endfor %}
     </div>
   </div>
 </section>
-
 <!-- Footer -->
 <footer class="footer">
 <p>&copy; 2025 Gimnasio - Todos los derechos reservados.</p>
 </footer>
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
