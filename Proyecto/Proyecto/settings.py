@@ -1,13 +1,15 @@
 from pathlib import Path
 import os
 import dj_database_url
+from decouple import config
 
+# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Seguridad
-SECRET_KEY = os.environ.get('SECRET_KEY', 'clave_de_desarollo')
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-bny*9t_o2%h$9$#@0jyx&t%zo(qp%etg+$!r)pxp^g&b5&wgfh')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = ['*']  # Puedes personalizar esto con tu dominio en producción
 
 # Aplicaciones
 INSTALLED_APPS = [
@@ -23,6 +25,7 @@ INSTALLED_APPS = [
 # Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Para servir archivos estáticos en producción
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -33,6 +36,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Proyecto.urls'
 
+# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -51,12 +55,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Proyecto.wsgi.application'
 
-# Base de datos (puedes cambiarla desde Railway con una URL)
+# Base de datos
 DATABASES = {
-    'default': dj_database_url.config(default='mysql://root:12345@localhost:3306/gimnasio', conn_max_age=600)
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='mysql://root:12345@localhost:3306/gimnasio')
+    )
 }
 
-# Validación de contraseñas
+# Validadores de contraseña
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -65,16 +71,18 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internacionalización
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'es-co'
+TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-# Archivos estáticos y media
+# Archivos estáticos y medios
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # importante para Railway
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+# Campo por defecto
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

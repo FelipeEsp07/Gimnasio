@@ -768,7 +768,6 @@ def editar_entrenador(request):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     
     if request.method == "POST":
-        # Actualiza los campos básicos del Usuario
         usuario.nombre = request.POST.get('nombre')
         usuario.cedula = request.POST.get('cedula')
         usuario.telefono = request.POST.get('telefono')
