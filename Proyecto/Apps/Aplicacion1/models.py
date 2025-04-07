@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from datetime import date, timedelta
+from django.core.exceptions import ValidationError
 
 class Rol(models.Model):
     nombre = models.CharField(max_length=50)
@@ -122,3 +123,25 @@ class ClaseGrupal(models.Model):
             days_ahead += 7
         next_date = today + timedelta(days=days_ahead)
         return next_date
+    
+    @property
+    def espacios_restantes(self):
+        inscritos = self.inscripciones.count()
+        return self.cupo_maximo - inscritos
+    
+class InscripcionClase(models.Model):
+    clase = models.ForeignKey(ClaseGrupal, on_delete=models.CASCADE, related_name='inscripciones')
+    cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='inscripciones')
+    fecha_inscripcion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.clase.nombre} - {self.cliente.nombre}"
+
+    def clean(self):
+        inscripciones_actuales = self.clase.inscripciones.exclude(pk=self.pk).count()
+        if inscripciones_actuales >= self.clase.cupo_maximo:
+            raise ValidationError("La clase ha alcanzado su cupo máximo.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)

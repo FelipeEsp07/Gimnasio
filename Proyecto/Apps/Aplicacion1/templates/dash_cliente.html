@@ -6,46 +6,51 @@
   <title>Dashboard Cliente</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #fff;
+      background: #fff;
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
     }
     .navbar {
-      background-color: rgba(0, 0, 0, 0.9);
-      padding: 30px 0; 
+      background: rgba(0, 0, 0, 0.9);
+      padding: 30px 0;
     }
     .navbar-brand {
       color: #e63946;
       font-weight: bold;
-      font-size: 40px; 
+      font-size: 40px;
     }
     .navbar-nav .nav-link {
       color: #fff;
       margin: 0 15px;
       font-size: 20px;
+      cursor: pointer;
     }
     .navbar-nav .nav-link:hover {
       color: #e63946;
     }
+  
     .main-container {
-      background-color: #fff;
+      background: #fff;
       color: #000;
       padding: 40px 20px;
       margin-top: 120px;
       border-radius: 8px;
+      min-height: 500px;
     }
+  
     .card {
-      background-color: #f8f9fa;
+      background: #f8f9fa;
       border: none;
-      margin-bottom: 20px;
       border-radius: 16px;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s, box-shadow 0.3s;
+      margin-bottom: 20px;
     }
     .card:hover {
       transform: translateY(-6px);
@@ -54,24 +59,36 @@
     .card-title {
       font-weight: bold;
     }
-    .section-title {
-      margin-top: 40px;
-      margin-bottom: 20px;
-      font-size: 28px;
-      font-weight: 600;
-    }
+  
     .btn-custom {
-      background-color: #e63946;
+      background: #e63946;
       border: none;
       color: #fff;
       padding: 10px 20px;
       border-radius: 30px;
       font-size: 16px;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s;
     }
     .btn-custom:hover {
-      background-color: #c92a38;
+      background: #c92a38;
     }
+    .btn-warning {
+      background: #e63946;
+      color: #fff;
+      font-weight: bold;
+      padding: 14px 30px;
+      border-radius: 30px;
+      font-size: 18px;
+      border: none;
+      transition: background 0.3s;
+    }
+    .btn-warning:hover {
+      background: #c92a38;
+    }
+    .btn-animated {
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+  
     .profile-picture {
       width: 170px;
       height: 170px;
@@ -79,39 +96,158 @@
       border-radius: 50%;
       border: 3px solid #e63946;
     }
-    .bg-white {
-      background-color: #f8f9fa;
+  
+    .group-classes-section {
+      padding: 100px 0;
+      background: #fff;
+      color: #000;
+    }
+    .group-classes-section h2 {
+      color: #e63946;
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+    }
+    .group-classes-section .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+    }
+  
+    .group-class-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 calc(33% - 24px);
+      min-width: 320px;
+    }
+    .group-class-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+    .group-class-card .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+    .group-class-card .card-body {
+      padding: 24px;
+      text-align: center;
+      color: #000;
+      flex: 1;
+    }
+
+    .service-card,
+    .product-card,
+    .group-class-card {
+      flex: 0 0 calc(33% - 24px);
+      min-width: 320px;
+      background-color: #ffffff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(255, 255, 255, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      color: #ffffff;
+      scroll-snap-align: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .custom-alert {
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      animation: fadeInUp 0.6s ease;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: none;
+    }
+
+    .alert-error,
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: none;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: none;
+    }
+
+    .alert-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
       <a class="navbar-brand" href="#">GYM</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir menú">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="#perfil">Mi Cuenta</a></li>
-          <li class="nav-item"><a class="nav-link" href="#pagos">Pagos</a></li>
-          <li class="nav-item"><a class="nav-link" href="#notificaciones">Notificaciones</a></li>
+          <li class="nav-item"><a class="nav-link" href="#group-classes-section">Clases</a></li>
+          <li class="nav-item"><a class="nav-link" href="#planes">Planes</a></li>
           <li class="nav-item"><a class="nav-link" href="#reservas">Reservas</a></li>
-          <li class="nav-item"><a class="nav-link" href="#registro">Registro Entrada</a></li>
-          <li class="nav-item"><a class="nav-link" href="#pago-membresia">Pago Membresía</a></li>
+          <li class="nav-item"><a class="nav-link" href="#pago-membresia">Pagos</a></li>
           <li class="nav-item"><a class="nav-link" href="{#}">Cerrar Sesión</a></li>
         </ul>
       </div>
     </div>
   </nav>
+
   <div class="container main-container">
+      <!-- Bloque para mostrar mensajes -->
+      {% if messages %}
+        <div class="mt-3">
+          {% for message in messages %}
+            <div class="alert alert-dismissible fade show custom-alert alert-{{ message.tags }}" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
     <!-- Sección de Mi Perfil -->
-    <section id="perfil" class="py-5">
+    <section id="perfil" class="py-5 content-section">
       <div class="container">
         <div class="card shadow-sm p-4">
           <div class="d-flex align-items-center">
-            <!-- Imagen de perfil -->
             <div>
               {% if cliente.foto_perfil %}
                 <img src="{{ cliente.foto_perfil.url }}" alt="Imagen de Perfil" class="rounded-circle profile-picture">
@@ -121,15 +257,18 @@
                 </div>
               {% endif %}
             </div>
-            <!-- Información básica -->
             <div class="ms-4">
               <h2 class="mb-1">{{ cliente.nombre }}</h2>
               <p class="text-muted mb-0">{{ cliente.correo }}</p>
               <p class="text-muted mb-0">Rol: {{ cliente.rol.nombre }}</p>
             </div>
+            <div class="ms-auto">
+              <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#editarClienteModal">
+                Editar Perfil
+              </button>
+            </div>
           </div>
           <hr class="my-4">
-          <!-- Detalles adicionales -->
           <div class="row">
             <div class="col-md-6">
               <div class="mb-3">
@@ -167,18 +306,149 @@
             <h5 class="fw-bold">Tu Código QR de Acceso</h5>
             {% if cliente.qr_code %}
               <img src="{{ cliente.qr_code.url }}" alt="Código QR" class="img-fluid" style="max-width: 200px;">
+              <div class="mt-3">
+                <a href="{% url 'descargar_qr' %}" class="btn btn-custom">
+                  Descargar Código QR
+                </a>
+              </div>
             {% else %}
               <p class="text-muted">No se ha generado un código QR.</p>
             {% endif %}
           </div>
-          <!-- Botón para editar perfil -->
-          <div class="text-end">
-            <a href="{#}" class="btn btn-custom">Editar Perfil</a>
-          </div>
         </div>
       </div>
     </section>
+
+    <!-- Sección de Clases Grupales -->
+    <section id="group-classes-section" class="group-classes-section text-center content-section" style="display: none;">
+      <div class="container">
+        <h2 class="mb-5">Clases Grupales</h2>
+        <div class="row">
+          {% for clase in clases_grupales %}
+          <div class="col-md-4">
+            <div class="card group-class-card shadow-lg">
+              {% if clase.imagen %}
+              <img src="{{ clase.imagen.url }}" class="card-img-top" alt="{{ clase.nombre }}">
+              {% endif %}
+              <div class="card-body">
+                <h3 class="card-title">{{ clase.nombre }}</h3>
+                <p class="card-text"><strong>Descripción:</strong> {{ clase.descripcion }}</p>
+                <p><strong>Día:</strong> {{ clase.get_dia_display }} - {{ clase.get_next_date|date:"d/m/Y" }}</p>
+                <p><strong>Hora:</strong> {{ clase.hora|time:"h:i A" }}</p>
+                <p><strong>Cupo Máximo:</strong> {{ clase.cupo_maximo }}</p>
+                <p><strong>Instructor:</strong> {{ clase.instructor.nombre }} {{ clase.instructor.apellido }}</p>
+                <a href="{% url 'inscribir_clase' clase.id %}" class="btn btn-warning btn-animated mt-3">Tomar Clase</a>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <p>No hay clases grupales registradas.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Planes de Membresía -->
+    <section id="planes" class="py-5 content-section" style="background: #fff; color: #000; display: none;">
+      <div class="container">
+        <h2 class="mb-5 text-center" style="color: #e63946;">Planes de Membresía</h2>
+        <div class="row">
+          {% for plan in planes %}
+          <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius: 16px;">
+              {% if plan.imagen %}
+              <img src="{{ plan.imagen.url }}" class="card-img-top" alt="{{ plan.nombre }}" style="height: 200px; object-fit: cover;">
+              {% endif %}
+              <div class="card-body text-center">
+                <h3 class="card-title">{{ plan.nombre }}</h3>
+                <p class="card-text">{{ plan.descripcion }}</p>
+                <p class="mb-1" style="font-size: 20px; font-weight: bold; color: #e63946;">${{ plan.precio }}</p>
+                <p class="mb-3">Duración: {{ plan.duracion_meses }} meses</p>
+                <a href="#" class="btn btn-warning">Contratar Plan</a>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-center">No hay planes de membresía registrados.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+
+  <!-- Modal para Editar Información -->
+  <div class="modal fade" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="{% url 'editar_cliente' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarClienteModalLabel">Editar Perfil</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" name="nombre" value="{{ cliente.nombre }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="cedula" class="form-label">Cédula</label>
+              <input type="text" class="form-control" id="cedula" name="cedula" value="{{ cliente.cedula }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="text" class="form-control" id="telefono" name="telefono" value="{{ cliente.telefono }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="direccion" class="form-label">Dirección</label>
+              <input type="text" class="form-control" id="direccion" name="direccion" value="{{ cliente.direccion }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" id="email" name="email" value="{{ cliente.correo }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+              <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ cliente.fecha_nacimiento|date:'Y-m-d' }}">
+            </div>
+            <div class="mb-3">
+              <label for="foto" class="form-label">Foto de Perfil</label>
+              <input type="file" class="form-control" id="foto" name="foto">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-custom">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    const sections = document.querySelectorAll('.content-section');
+    function showSection(id) {
+      sections.forEach(section => {
+        section.style.display = 'none';
+      });
+      const target = document.querySelector(id);
+      if(target) {
+        target.style.display = 'block';
+      }
+    }
+    showSection('#perfil');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        showSection(targetId);
+      });
+    });
+  </script>
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
 </body>
 </html>

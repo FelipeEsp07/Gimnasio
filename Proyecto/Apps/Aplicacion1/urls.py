@@ -26,6 +26,9 @@ urlpatterns = [
     path('eliminar_clase_grupal/<int:id>/', views.eliminar_clase_grupal, name='eliminar_clase_grupal'),
     path('dashboard_cliente/', views.dashboard_cliente, name='dashboard_cliente'),
     path('acceso_usaurio/', views.acceso_usuario, name='acceso_usuario'),
+    path('descargar_qr/', views.descargar_qr, name='descargar_qr'),
+    path('editar_cliente/', views.editar_cliente, name='editar_cliente'),
+    path('inscribir_clase/<int:clase_id>/', views.inscribir_a_clase, name='inscribir_clase'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

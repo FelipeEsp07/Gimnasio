@@ -6,8 +6,10 @@ from django.utils.dateparse import parse_date
 import qrcode
 from io import BytesIO
 from django.core.files import File
-
-from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal
+from django.http import FileResponse
+import os
+from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, InscripcionClase
+from django.core.exceptions import ValidationError
 
 def home(request):
     planes = PlanMembresia.objects.all()
@@ -495,13 +497,21 @@ def dashboard_cliente(request):
     if not usuario_id:
         messages.error(request, "Debes iniciar sesión.")
         return redirect('login_clientes')
+    
     try:
         usuario = Usuario.objects.get(id=usuario_id)
     except Usuario.DoesNotExist:
         messages.error(request, "El usuario no existe.")
         return redirect('login_clientes')
     
-    context = {'cliente': usuario}
+    clases = ClaseGrupal.objects.all().order_by('dia', 'hora')
+    planes = PlanMembresia.objects.all()
+    
+    context = {
+        'cliente': usuario,
+        'clases_grupales': clases,
+        'planes': planes,
+    }
     return render(request, 'dash_cliente.html', context)
 
 def acceso_usuario(request):
@@ -518,3 +528,73 @@ def acceso_usuario(request):
     
     return render(request, 'acceso_usuario.html', {'usuario': usuario})
 
+def descargar_qr(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+    
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    
+    if not usuario.qr_code:
+        messages.error(request, "No se ha generado un código QR.")
+        return redirect('dashboard_cliente')
+    
+    qr_path = usuario.qr_code.path
+    
+    response = FileResponse(open(qr_path, 'rb'), as_attachment=True, filename=os.path.basename(qr_path))
+    return response
+
+def editar_cliente(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para editar tus datos.")
+        return redirect('login_clientes')
+    
+    cliente = get_object_or_404(Usuario, id=usuario_id)
+    
+    if request.method == "POST":
+        cliente.nombre = request.POST.get('nombre')
+        cliente.cedula = request.POST.get('cedula')
+        cliente.telefono = request.POST.get('telefono')
+        cliente.direccion = request.POST.get('direccion')
+        cliente.correo = request.POST.get('email')
+        
+        fecha_nacimiento_str = request.POST.get('fecha_nacimiento')
+        if fecha_nacimiento_str:
+            fecha_nacimiento = parse_date(fecha_nacimiento_str)
+            if fecha_nacimiento >= datetime.now().date():
+                messages.error(request, "La fecha de nacimiento no puede ser la fecha actual ni una fecha futura.")
+                return redirect('dashboard_cliente')
+            cliente.fecha_nacimiento = fecha_nacimiento
+        
+        if 'foto' in request.FILES:
+            cliente.foto_perfil = request.FILES.get('foto')
+        
+        cliente.save()
+        messages.success(request, "Tus datos se han actualizado correctamente.")
+        return redirect('dashboard_cliente')
+    
+    return render(request, 'dash_cliente.html', {'cliente': cliente})
+
+def inscribir_a_clase(request, clase_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+    
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    clase = get_object_or_404(ClaseGrupal, id=clase_id)
+
+    if InscripcionClase.objects.filter(clase=clase, cliente=usuario).exists():
+        messages.error(request, "Ya estás inscrito a esta clase.")
+        return redirect('dashboard_cliente')
+
+    try:
+        inscripcion = InscripcionClase(clase=clase, cliente=usuario)
+        inscripcion.full_clean() 
+        inscripcion.save()
+        messages.success(request, "Te has inscrito a la clase con éxito.")
+    except ValidationError as e:
+        messages.error(request, "No se pudo inscribir a la clase: " + "; ".join(e.messages))
+    return redirect('dashboard_cliente')
