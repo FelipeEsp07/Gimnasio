@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from datetime import datetime
+from datetime import datetime, date
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils.dateparse import parse_date
 import qrcode
@@ -8,7 +8,7 @@ from io import BytesIO
 from django.core.files import File
 from django.http import FileResponse
 import os
-from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, InscripcionClase
+from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, InscripcionClase, SesionPersonalizada
 from django.core.exceptions import ValidationError
 
 def home(request):
@@ -388,10 +388,12 @@ def dashboard_entrenador(request):
         return redirect('login_clientes')
     
     clases = ClaseGrupal.objects.filter(instructor=usuario)
+    sesiones_personalizadas = SesionPersonalizada.objects.filter(entrenador=usuario)
     
     context = {
         'usuario': usuario,
         'clases': clases,
+        'sesiones_personalizadas': sesiones_personalizadas,
     }
     return render(request, 'dash_entrenador.html', context)
 
@@ -506,11 +508,16 @@ def dashboard_cliente(request):
     
     clases = ClaseGrupal.objects.all().order_by('dia', 'hora')
     planes = PlanMembresia.objects.all()
-    
+    entrenadores = Usuario.objects.filter(rol__nombre__iexact='Entrenador')
+    reservas = SesionPersonalizada.objects.filter(cliente=usuario)
+
     context = {
         'cliente': usuario,
         'clases_grupales': clases,
         'planes': planes,
+        'entrenadores': entrenadores,
+        'reservas': reservas,
+
     }
     return render(request, 'dash_cliente.html', context)
 
@@ -598,3 +605,189 @@ def inscribir_a_clase(request, clase_id):
     except ValidationError as e:
         messages.error(request, "No se pudo inscribir a la clase: " + "; ".join(e.messages))
     return redirect('dashboard_cliente')
+
+def agendar_sesion_personalizada(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para agendar una sesión.")
+        return redirect('login_clientes')
+    
+    cliente = get_object_or_404(Usuario, id=usuario_id)
+    
+    if request.method == 'POST':
+        entrenador_id = request.POST.get('entrenador')
+        fecha_str = request.POST.get('fecha')
+        hora_str = request.POST.get('hora')
+        comentarios = request.POST.get('comentarios', '')
+        
+        errores = []
+        if not entrenador_id:
+            errores.append("Selecciona un entrenador.")
+        if not fecha_str:
+            errores.append("La fecha es obligatoria.")
+        if not hora_str:
+            errores.append("La hora es obligatoria.")
+        
+        if errores:
+            for error in errores:
+                messages.error(request, error)
+            return redirect('dashboard_cliente')
+        
+        try:
+            entrenador = Usuario.objects.get(id=entrenador_id, rol__nombre__iexact='Entrenador')
+        except Usuario.DoesNotExist:
+            messages.error(request, "El entrenador seleccionado no existe.")
+            return redirect('dashboard_cliente')
+        
+        fecha = parse_date(fecha_str)
+        try:
+            hora = datetime.strptime(hora_str, "%H:%M").time()
+        except ValueError:
+            messages.error(request, "La hora proporcionada es inválida.")
+            return redirect('dashboard_cliente')
+        
+        if fecha < date.today():
+            messages.error(request, "La fecha de la sesión no puede ser anterior a hoy.")
+            return redirect('dashboard_cliente')
+        
+        try:
+            sesion = SesionPersonalizada(
+                cliente=cliente,
+                entrenador=entrenador,
+                fecha=fecha,
+                hora=hora,
+                comentarios=comentarios,
+                estado='PENDIENTE' 
+            )
+            sesion.full_clean() 
+            sesion.save()
+            messages.success(request, "¡Sesión personalizada agendada correctamente!")
+        except ValidationError as e:
+            messages.error(request, "Error al agendar la sesión: " + "; ".join(e.messages))
+        
+        return redirect('dashboard_cliente')
+    else:
+        messages.error(request, "Método no permitido.")
+        return redirect('dashboard_cliente')
+    
+def editar_reserva(request, reserva_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+
+    reserva = get_object_or_404(SesionPersonalizada, id=reserva_id, cliente_id=usuario_id)
+    
+    if request.method == "POST":
+        entrenador_id = request.POST.get("entrenador")
+        fecha_str = request.POST.get("fecha")
+        hora_str = request.POST.get("hora")
+        comentarios = request.POST.get("comentarios", "")
+
+        fecha = parse_date(fecha_str)
+        if not fecha:
+            messages.error(request, "Fecha inválida.")
+            return redirect('editar_reserva', reserva_id=reserva.id)
+        if fecha < date.today():
+            messages.error(request, "La fecha de la sesión no puede ser anterior a hoy.")
+            return redirect('editar_reserva', reserva_id=reserva.id)
+
+        try:
+            hora = datetime.strptime(hora_str, "%H:%M").time()
+        except ValueError:
+            messages.error(request, "La hora proporcionada es inválida.")
+            return redirect('editar_reserva', reserva_id=reserva.id)
+
+        try:
+            entrenador = Usuario.objects.get(id=entrenador_id, rol__nombre__iexact='Entrenador')
+        except Usuario.DoesNotExist:
+            messages.error(request, "El entrenador seleccionado no existe.")
+            return redirect('editar_reserva', reserva_id=reserva.id)
+
+        reserva.entrenador = entrenador
+        reserva.fecha = fecha
+        reserva.hora = hora
+        reserva.comentarios = comentarios
+        reserva.save()
+
+        messages.success(request, "Reserva actualizada correctamente.")
+        return redirect('dashboard_cliente')
+    
+    messages.error(request, "Acceso inválido.")
+    return redirect('dashboard_cliente')
+
+def confirmar_sesion_personalizada(request, sesion_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+    
+    sesion = get_object_or_404(SesionPersonalizada, id=sesion_id, entrenador_id=usuario_id)
+    
+    if sesion.estado == "CONFIRMADA":
+        messages.info(request, "La sesión ya está confirmada.")
+    elif sesion.estado == "CANCELADA":
+        messages.error(request, "La sesión está cancelada y no se puede confirmar.")
+    else:
+        sesion.estado = "CONFIRMADA"
+        sesion.save()
+        messages.success(request, "Sesión confirmada exitosamente.")
+    
+    return redirect('dashboard_entrenador')
+
+def cancelar_sesion_entrenador(request, reserva_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+    
+    sesion = get_object_or_404(SesionPersonalizada, id=reserva_id, entrenador_id=usuario_id)
+    
+    sesion.delete()
+    messages.success(request, "Sesión cancelada y eliminada de la base de datos.")
+    return redirect('dashboard_entrenador')
+
+def cancelar_reserva_cliente(request, reserva_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+    
+    reserva = get_object_or_404(SesionPersonalizada, id=reserva_id, cliente_id=usuario_id)
+    
+    reserva.delete()
+    messages.success(request, "Reserva cancelada y eliminada de la base de datos.")
+    return redirect('dashboard_cliente')
+
+def editar_entrenador(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para editar tus datos.")
+        return redirect('login_clientes')
+    
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    
+    if request.method == "POST":
+        # Actualiza los campos básicos del Usuario
+        usuario.nombre = request.POST.get('nombre')
+        usuario.cedula = request.POST.get('cedula')
+        usuario.telefono = request.POST.get('telefono')
+        usuario.direccion = request.POST.get('direccion')
+        usuario.correo = request.POST.get('email')
+        
+        fecha_nacimiento_str = request.POST.get('fecha_nacimiento')
+        if fecha_nacimiento_str:
+            fecha_nacimiento = parse_date(fecha_nacimiento_str)
+            if fecha_nacimiento >= datetime.now().date():
+                messages.error(request, "La fecha de nacimiento no puede ser la fecha actual ni una fecha futura.")
+                return redirect('dashboard_entrenador')
+            usuario.fecha_nacimiento = fecha_nacimiento
+        
+        if 'foto' in request.FILES:
+            usuario.foto_perfil = request.FILES.get('foto')
+        
+        usuario.save()
+        messages.success(request, "Tus datos se han actualizado correctamente.")
+        return redirect('dashboard_entrenador')
+    
+    return render(request, 'dash_entrenador.html', {'usuario': usuario})

@@ -235,6 +235,40 @@
       background-color: #c92a38;
       transform: scale(1.05);
     }
+    .btn-custom {
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
+  }
+
+  .btn-custom:hover {
+    background-color: #d62839;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(214, 40, 57, 0.3);
+  }
+
+  .btn-custom:active {
+    transform: scale(0.97);
+  }
+
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #e63946;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease;
+  }
+
+  .profile-picture:hover {
+    transform: scale(1.05);
+  }
   </style>
 </head>
 <body class="sidebar-hidden">
@@ -243,9 +277,11 @@
     <h2>Entrenador GYM</h2>
     <a href="#dashboard" id="link-dashboard">Inicio Dashboard</a>
     <a href="#registrarClase" id="link-registrar-clase">Registrar Clase Grupal</a>
+    <a href="#listadoClases" id="link-listado-clases">Listado Clases Grupales</a>
+    <a href="#listadoSesiones" id="link-listado-sesiones">Sesiones Personalizadas</a>
     <a href="#reportarProblemas" id="link-reportar-problemas">Reportar Problemas</a>
   </div> 
-  <!-- Top Navbar -->
+    <!-- Top Navbar -->
   <div class="top-navbar">
     <div class="d-flex align-items-center">
       <button class="toggle-sidebar" id="toggleSidebar">&#9776;</button>
@@ -253,13 +289,136 @@
     </div>
     <a href="#" class="logout">Cerrar Sesión</a>
   </div>
+
   <!-- Inicio Dashboard -->
   <div class="main-content" id="dashboardContent" style="display: block;">
     <div class="content-wrapper container fade-in">
-      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Resumen del Entrenador</h2>
-      <p class="text-center">Bienvenido al panel de control. Selecciona una opción del menú para continuar.</p>
-    </div>
-  </div>
+      <!-- Tarjeta de Perfil del Entrenador -->
+      <section id="perfil" class="py-5 content-section">
+        <div class="container">
+          <div class="card shadow-sm p-4">
+            <div class="d-flex align-items-center">
+              <div>
+                {% if usuario.foto_perfil %}
+                  <img src="{{ usuario.foto_perfil.url }}" alt="Imagen de Perfil" class="rounded-circle profile-picture">
+                {% else %}
+                  <div class="rounded-circle profile-picture bg-white d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person-fill" style="font-size: 3rem; color: #e63946;"></i>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="ms-4">
+                <h2 class="mb-1">{{ usuario.nombre }}</h2>
+                <p class="text-muted mb-0">{{ usuario.correo }}</p>
+                <p class="text-muted mb-0">Rol: {{ usuario.rol.nombre }}</p>
+              </div>
+              <div class="ms-auto">
+                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#editarEntrenadorModal">
+                  Editar Perfil
+                </button>
+              </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <h5 class="fw-bold">Cédula:</h5>
+                  <p class="mb-0">{{ usuario.cedula }}</p>
+                </div>
+                <div class="mb-3">
+                  <h5 class="fw-bold">Teléfono:</h5>
+                  <p class="mb-0">{{ usuario.telefono }}</p>
+                </div>
+                <div class="mb-3">
+                  <h5 class="fw-bold">Fecha de Nacimiento:</h5>
+                  <p class="mb-0">{{ usuario.fecha_nacimiento|date:"d/m/Y" }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <h5 class="fw-bold">Dirección:</h5>
+                  <p class="mb-0">{{ usuario.direccion }}</p>
+                </div>
+                <div class="mb-3">
+                  <h5 class="fw-bold">Condiciones Aceptadas:</h5>
+                  <p class="mb-0">
+                    {% if usuario.aceptar_condiciones %}
+                      Sí
+                    {% else %}
+                      No
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Sección Código QR -->
+            <div class="text-center my-4">
+              <h5 class="fw-bold">Tu Código QR de Acceso</h5>
+              {% if usuario.qr_code %}
+                <img src="{{ usuario.qr_code.url }}" alt="Código QR" class="img-fluid" style="max-width: 200px;">
+                <div class="mt-3">
+                  <a href="{% url 'descargar_qr' %}" class="btn btn-custom">
+                    Descargar Código QR
+                  </a>
+                </div>
+              {% else %}
+                <p class="text-muted">No se ha generado un código QR.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modal para Editar Entrenador -->
+      <div class="modal fade" id="editarEntrenadorModal" tabindex="-1" aria-labelledby="editarEntrenadorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <form action="{% url 'editar_entrenador' %}" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="modal-header">
+                <h5 class="modal-title" id="editarEntrenadorModalLabel">Editar Perfil de Entrenador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Datos del Usuario -->
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario.nombre }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="cedula" class="form-label">Cédula</label>
+                  <input type="text" class="form-control" id="cedula" name="cedula" value="{{ usuario.cedula }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="telefono" class="form-label">Teléfono</label>
+                  <input type="text" class="form-control" id="telefono" name="telefono" value="{{ usuario.telefono }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="direccion" class="form-label">Dirección</label>
+                  <input type="text" class="form-control" id="direccion" name="direccion" value="{{ usuario.direccion }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Correo electrónico</label>
+                  <input type="email" class="form-control" id="email" name="email" value="{{ usuario.correo }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                  <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ usuario.fecha_nacimiento|date:'Y-m-d' }}">
+                </div>
+                <div class="mb-3">
+                  <label for="foto" class="form-label">Foto de Perfil</label>
+                  <input type="file" class="form-control" id="foto" name="foto">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-custom">Guardar Cambios</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
   <!-- Sección Formulario Clases Grupales -->
   <div class="main-content" id="registrarClaseContent">
     <div class="content-wrapper container fade-in">
@@ -402,6 +561,87 @@
       </div>
     </div>
   </div>
+
+  <!-- Sección Listado Clases Grupales -->
+  <div class="main-content" id="listadoClasesContent">
+    <div class="content-wrapper container fade-in">
+      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Listado de Clases Grupales e Inscripciones</h2>
+      {% for clase in clases %}
+      <div class="card mt-4">
+        <div class="card-header" style="background-color: var(--primary); color: #fff;">
+          {{ clase.nombre }} - {{ clase.get_dia_display }} a las {{ clase.hora }}
+        </div>
+        <div class="card-body">
+          {% if clase.inscripciones.all %}
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Cliente</th>
+                  <th>Fecha de Inscripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inscripcion in clase.inscripciones.all %}
+                <tr>
+                  <td>{{ inscripcion.id }}</td>
+                  <td>{{ inscripcion.cliente.nombre }}</td>
+                  <td>{{ inscripcion.fecha_inscripcion|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <p class="text-center">No hay inscripciones para esta clase.</p>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+        <p class="text-center">No hay clases registradas.</p>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- Sección Listado Sesiones Personalizadas -->
+  <div class="main-content" id="listadoSesionesContent" style="display: none;">
+    <div class="content-wrapper container fade-in">
+      <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Listado de Sesiones Personalizadas</h2>
+      {% if sesiones_personalizadas %}
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sesion in sesiones_personalizadas %}
+              <tr>
+                <td>{{ sesion.id }}</td>
+                <td>{{ sesion.cliente.nombre }}</td>
+                <td>{{ sesion.fecha|date:"d/m/Y" }}</td>
+                <td>{{ sesion.hora|time:"H:i" }}</td>
+                <td>{{ sesion.estado }}</td>
+                <td>
+                  <a href="{% url 'confirmar_sesion_personalizada' sesion.id %}" class="btn btn-sm btn-success" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Confirmar Sesión</a>
+                  <a href="{% url 'cancelar_sesion_entrenador' sesion.id %}" class="btn btn-sm btn-danger">Cancelar Sesión</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-center">No hay sesiones personalizadas registradas.</p>
+      {% endif %}
+    </div>
+  </div>
   <!-- Sección Reportar Problemas -->
   <div class="main-content" id="reportarProblemasContent">
     <div class="content-wrapper container fade-in">
@@ -420,27 +660,47 @@
     </div>
   </div>
   <script>
+    // Array con los IDs de todas las secciones del dashboard
+    const sections = [
+      'dashboardContent',
+      'registrarClaseContent',
+      'reportarProblemasContent',
+      'listadoClasesContent',
+      'listadoSesionesContent'
+    ];
+  
+    // Función que oculta todas las secciones y muestra solo la indicada
+    function showSection(sectionId) {
+      sections.forEach(id => {
+        document.getElementById(id).style.display = (id === sectionId) ? 'block' : 'none';
+      });
+    }
+  
+    // Asignación de event listeners a los enlaces de navegación
     document.getElementById('link-dashboard').addEventListener('click', function(e) {
       e.preventDefault();
-      document.getElementById('dashboardContent').style.display = 'block';
-      document.getElementById('registrarClaseContent').style.display = 'none';
-      document.getElementById('reportarProblemasContent').style.display = 'none';
+      showSection('dashboardContent');
     });
     document.getElementById('link-registrar-clase').addEventListener('click', function(e) {
       e.preventDefault();
-      document.getElementById('dashboardContent').style.display = 'none';
-      document.getElementById('registrarClaseContent').style.display = 'block';
-      document.getElementById('reportarProblemasContent').style.display = 'none';
+      showSection('registrarClaseContent');
     });
     document.getElementById('link-reportar-problemas').addEventListener('click', function(e) {
       e.preventDefault();
-      document.getElementById('dashboardContent').style.display = 'none';
-      document.getElementById('registrarClaseContent').style.display = 'none';
-      document.getElementById('reportarProblemasContent').style.display = 'block';
+      showSection('reportarProblemasContent');
     });
-    
+    document.getElementById('link-listado-clases').addEventListener('click', function(e) {
+      e.preventDefault();
+      showSection('listadoClasesContent');
+    });
+    document.getElementById('link-listado-sesiones').addEventListener('click', function(e) {
+      e.preventDefault();
+      showSection('listadoSesionesContent');
+    });
+  
+    // Toggle de la sidebar
     document.getElementById('toggleSidebar').addEventListener('click', function() {
-      if(document.body.classList.contains('sidebar-hidden')) {
+      if (document.body.classList.contains('sidebar-hidden')) {
         document.body.classList.remove('sidebar-hidden');
         document.body.classList.add('sidebar-visible');
       } else {
@@ -448,24 +708,27 @@
         document.body.classList.add('sidebar-hidden');
       }
     });
-
+  
+    // Lógica para el modal de edición de clases
     var editarClaseModal = document.getElementById('editarClaseModal');
-      editarClaseModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget;
-        var claseId = button.getAttribute('data-id');
-        var nombre = button.getAttribute('data-nombre');
-        var descripcion = button.getAttribute('data-descripcion');
-        var dia = button.getAttribute('data-dia');
-        var hora = button.getAttribute('data-hora');
-        var cupo = button.getAttribute('data-cupo');
-        document.getElementById('clase_nombre_edit').value = nombre;
-        document.getElementById('clase_descripcion_edit').value = descripcion;
-        document.getElementById('clase_dia_edit').value = dia;
-        document.getElementById('clase_hora_edit').value = hora;
-        document.getElementById('clase_cupo_edit').value = cupo;
-        var form = document.getElementById('editarClaseForm');
-        form.action = "{% url 'editar_clase_grupal' 0 %}".replace('0', claseId);
-      });
+    editarClaseModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var claseId = button.getAttribute('data-id');
+      var nombre = button.getAttribute('data-nombre');
+      var descripcion = button.getAttribute('data-descripcion');
+      var dia = button.getAttribute('data-dia');
+      var hora = button.getAttribute('data-hora');
+      var cupo = button.getAttribute('data-cupo');
+  
+      document.getElementById('clase_nombre_edit').value = nombre;
+      document.getElementById('clase_descripcion_edit').value = descripcion;
+      document.getElementById('clase_dia_edit').value = dia;
+      document.getElementById('clase_hora_edit').value = hora;
+      document.getElementById('clase_cupo_edit').value = cupo;
+  
+      var form = document.getElementById('editarClaseForm');
+      form.action = "{% url 'editar_clase_grupal' 0 %}".replace('0', claseId);
+    });
   </script>
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

@@ -206,6 +206,136 @@
       color: #0c5460;
       border: none;
     }
+    
+    .container-registro {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      animation: fadeIn 1s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .row-registro {
+      display: flex;
+      width: 80%;
+      max-width: 1200px;
+      border: 2px solid #e63946;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .info-section {
+      background-color: #e63946;
+      padding: 40px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+    .info-section h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .info-section p {
+      font-size: 1rem;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .info-section .btn-signin {
+      background-color: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      text-transform: uppercase;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .info-section .btn-signin:hover {
+      background-color: #fff;
+      color: #e63946;
+    }
+    .form-section {
+      background-color: #fff;
+      padding: 40px;
+      flex: 1;
+      animation: slideIn 0.8s ease-out;
+    }
+    .form-section h2 {
+      text-align: center;
+      color: #e63946;
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    .form-section input[type="date"],
+    .form-section input[type="time"],
+    .form-section select,
+    .form-section textarea {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      background-color: #fff;
+      color: #121212;
+      transition: border-color 0.3s ease;
+    }
+    .form-section input:focus,
+    .form-section select:focus,
+    .form-section textarea:focus {
+      border-color: #e63946;
+      outline: none;
+    }
+    .form-section .btn-signup {
+      background-color: #e63946;
+      color: #fff;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 30px;
+      text-transform: uppercase;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    .form-section .btn-signup:hover {
+      background-color: #c92a38;
+      animation: pulse 1s infinite;
+    }
+    .form-section a {
+      color: #e63946;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .form-section a:hover {
+      text-decoration: underline;
+      color: #c92a38;
+    }
+    @media (max-width: 768px) {
+      .row-registro {
+        flex-direction: column;
+      }
+      .info-section, .form-section {
+        border: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -230,18 +360,18 @@
   </nav>
 
   <div class="container main-container">
-      <!-- Bloque para mostrar mensajes -->
-      {% if messages %}
-        <div class="mt-3">
-          {% for message in messages %}
-            <div class="alert alert-dismissible fade show custom-alert alert-{{ message.tags }}" role="alert">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
+    <!-- Bloque para mostrar mensajes -->
+    {% if messages %}
+      <div class="mt-3">
+        {% for message in messages %}
+          <div class="alert alert-dismissible fade show custom-alert alert-{{ message.tags }}" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
     <!-- Sección de Mi Perfil -->
     <section id="perfil" class="py-5 content-section">
@@ -375,50 +505,188 @@
       </div>
     </section>
 
+    <!-- Sección de Reservas -->
+    <section id="reservas" class="py-5 content-section" style="display: none;">
+      <div class="container">
+        <!-- Formulario para Agendar Sesión Personalizada -->
+        <div class="container-registro">
+          <div class="row-registro">
+            <div class="form-section">
+              <h2>Agendar Sesión Personalizada</h2>
+              <form method="POST" action="{% url 'agendar_sesion_personalizada' %}">
+                {% csrf_token %}
+                <label for="id_entrenador">Entrenador</label>
+                <select id="id_entrenador" name="entrenador" required>
+                  <option value="">Seleccione un entrenador</option>
+                  {% for entrenador in entrenadores %}
+                    <option value="{{ entrenador.id }}">{{ entrenador.nombre }}</option>
+                  {% endfor %}
+                </select>
+                <label for="id_fecha">Fecha</label>
+                <input type="date" id="id_fecha" name="fecha" required>
+                <label for="id_hora">Hora</label>
+                <input type="time" id="id_hora" name="hora" required>
+                <label for="id_comentarios">Comentarios</label>
+                <textarea id="id_comentarios" name="comentarios" rows="3" placeholder="Opcional: Agrega algún comentario"></textarea>
+                <button type="submit" class="btn btn-custom mt-4">Agendar Sesión</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Tabla de Mis Reservas (solo en la pestaña de Reservas) -->
+        <div class="container mt-5">
+          <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Mis Reservas</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Entrenador</th>
+                  <th>Comentarios</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reserva in reservas %}
+                <tr>
+                  <td>{{ reserva.fecha }}</td>
+                  <td>{{ reserva.hora }}</td>
+                  <td>
+                    {% if reserva.entrenador %}
+                      {{ reserva.entrenador.nombre }}
+                    {% else %}
+                      Sin asignar
+                    {% endif %}
+                  </td>
+                  <td>{{ reserva.comentarios }}</td>
+                  <td>
+                    {% if reserva.estado == "CONFIRMADA" %}
+                      <span class="badge bg-success">Confirmada</span>
+                    {% elif reserva.estado == "PENDIENTE" %}
+                      <span class="badge bg-warning text-dark">Pendiente</span>
+                    {% elif reserva.estado == "CANCELADA" %}
+                      <span class="badge bg-danger">Cancelada</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <!-- Botón para abrir el modal de edición -->
+                    <button type="button" class="btn btn-sm btn-custom editar-btn" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editarReservaModal"
+                            data-reserva-id="{{ reserva.id }}"
+                            data-entrenador-id="{% if reserva.entrenador %}{{ reserva.entrenador.id }}{% endif %}"
+                            data-fecha="{{ reserva.fecha }}"
+                            data-hora="{{ reserva.hora }}"
+                            data-comentarios="{{ reserva.comentarios }}">
+                      Editar
+                    </button>
+                    <!-- Botón para cancelar la reserva -->
+                    <a href="{% url 'cancelar_reserva_cliente' reserva.id %}" class="btn btn-sm btn-danger">Cancelar Reserva</a>
+                    onclick="return confirm('¿Estás seguro de cancelar esta reserva?');">
+                      Cancelar
+                    </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center">No tienes reservas registradas.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <!-- Modal para Editar Información -->
-  <div class="modal fade" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form action="{% url 'editar_cliente' %}" method="POST" enctype="multipart/form-data">
+    <!-- Modal para Editar Cliente -->
+    <div class="modal fade" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form action="{% url 'editar_cliente' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h5 class="modal-title" id="editarClienteModalLabel">Editar Perfil</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ cliente.nombre }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="cedula" class="form-label">Cédula</label>
+                <input type="text" class="form-control" id="cedula" name="cedula" value="{{ cliente.cedula }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="telefono" name="telefono" value="{{ cliente.telefono }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" value="{{ cliente.direccion }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ cliente.correo }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ cliente.fecha_nacimiento|date:'Y-m-d' }}">
+              </div>
+              <div class="mb-3">
+                <label for="foto" class="form-label">Foto de Perfil</label>
+                <input type="file" class="form-control" id="foto" name="foto">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-custom">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Editar Reserva -->
+    <div class="modal fade" id="editarReservaModal" tabindex="-1" aria-labelledby="editarReservaModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <form method="POST" id="editarReservaForm">
           {% csrf_token %}
-          <div class="modal-header">
-            <h5 class="modal-title" id="editarClienteModalLabel">Editar Perfil</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="nombre" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nombre" name="nombre" value="{{ cliente.nombre }}" required>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editarReservaModalLabel">Editar Reserva</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="mb-3">
-              <label for="cedula" class="form-label">Cédula</label>
-              <input type="text" class="form-control" id="cedula" name="cedula" value="{{ cliente.cedula }}" required>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="modal-entrenador" class="form-label">Entrenador</label>
+                <select id="modal-entrenador" name="entrenador" class="form-select" required>
+                  <option value="">Seleccione un entrenador</option>
+                  {% for entrenador in entrenadores %}
+                    <option value="{{ entrenador.id }}">{{ entrenador.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="modal-fecha" class="form-label">Fecha</label>
+                <input type="date" id="modal-fecha" name="fecha" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modal-hora" class="form-label">Hora</label>
+                <input type="time" id="modal-hora" name="hora" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modal-comentarios" class="form-label">Comentarios</label>
+                <textarea id="modal-comentarios" name="comentarios" class="form-control" rows="3"></textarea>
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="telefono" class="form-label">Teléfono</label>
-              <input type="text" class="form-control" id="telefono" name="telefono" value="{{ cliente.telefono }}" required>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-custom">Guardar Cambios</button>
             </div>
-            <div class="mb-3">
-              <label for="direccion" class="form-label">Dirección</label>
-              <input type="text" class="form-control" id="direccion" name="direccion" value="{{ cliente.direccion }}" required>
-            </div>
-            <div class="mb-3">
-              <label for="email" class="form-label">Correo electrónico</label>
-              <input type="email" class="form-control" id="email" name="email" value="{{ cliente.correo }}" required>
-            </div>
-            <div class="mb-3">
-              <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-              <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ cliente.fecha_nacimiento|date:'Y-m-d' }}">
-            </div>
-            <div class="mb-3">
-              <label for="foto" class="form-label">Foto de Perfil</label>
-              <input type="file" class="form-control" id="foto" name="foto">
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-custom">Guardar Cambios</button>
           </div>
         </form>
       </div>
@@ -444,6 +712,23 @@
         const targetId = this.getAttribute('href');
         showSection(targetId);
       });
+    });
+
+    var editarReservaModal = document.getElementById('editarReservaModal');
+    editarReservaModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var reservaId = button.getAttribute('data-reserva-id');
+      var entrenadorId = button.getAttribute('data-entrenador-id');
+      var fecha = button.getAttribute('data-fecha');
+      var hora = button.getAttribute('data-hora');
+      var comentarios = button.getAttribute('data-comentarios');
+      
+      var form = document.getElementById('editarReservaForm');
+      form.action = "{% url 'editar_reserva' 0 %}".replace("0", reservaId);
+      document.getElementById('modal-entrenador').value = entrenadorId;
+      document.getElementById('modal-fecha').value = fecha;
+      document.getElementById('modal-hora').value = hora;
+      document.getElementById('modal-comentarios').value = comentarios;
     });
   </script>
 

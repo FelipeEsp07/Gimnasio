@@ -128,6 +128,7 @@ class ClaseGrupal(models.Model):
     def espacios_restantes(self):
         inscritos = self.inscripciones.count()
         return self.cupo_maximo - inscritos
+  
     
 class InscripcionClase(models.Model):
     clase = models.ForeignKey(ClaseGrupal, on_delete=models.CASCADE, related_name='inscripciones')
@@ -145,3 +146,25 @@ class InscripcionClase(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class SesionPersonalizada(models.Model):
+    ESTADO_CHOICES = [
+        ('PENDIENTE', 'Pendiente'),
+        ('CONFIRMADA', 'Confirmada'),
+        ('CANCELADA', 'Cancelada'),
+    ]
+    cliente = models.ForeignKey('Usuario', on_delete=models.CASCADE, related_name='sesiones_personalizadas')
+    entrenador = models.ForeignKey('Usuario', on_delete=models.SET_NULL, null=True, blank=True, related_name='sesiones_entrenadas')
+    fecha = models.DateField(help_text="Fecha de la sesión")
+    hora = models.TimeField(help_text="Hora de inicio de la sesión")
+    comentarios = models.TextField(blank=True, null=True, help_text="Comentarios adicionales")
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='PENDIENTE')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Sesión de {self.cliente.nombre} con {self.entrenador.nombre if self.entrenador else 'Sin asignar'} el {self.fecha} a las {self.hora}"
+
+    def clean(self):
+        if self.fecha < date.today():
+            raise ValidationError("La fecha de la sesión no puede ser anterior al día de hoy.")

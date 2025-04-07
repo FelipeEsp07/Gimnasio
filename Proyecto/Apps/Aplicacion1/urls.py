@@ -29,6 +29,13 @@ urlpatterns = [
     path('descargar_qr/', views.descargar_qr, name='descargar_qr'),
     path('editar_cliente/', views.editar_cliente, name='editar_cliente'),
     path('inscribir_clase/<int:clase_id>/', views.inscribir_a_clase, name='inscribir_clase'),
+    path('agendar-sesion/', views.agendar_sesion_personalizada, name='agendar_sesion_personalizada'),
+    path('editar-reserva/<int:reserva_id>/', views.editar_reserva, name='editar_reserva'),
+    path('confirmar_sesion/<int:sesion_id>/', views.confirmar_sesion_personalizada, name='confirmar_sesion_personalizada'),
+    path('cancelar_sesion_entrenador/<int:reserva_id>/', views.cancelar_sesion_entrenador, name='cancelar_sesion_entrenador'),
+    path('cancelar_reserva_cliente/<int:reserva_id>/', views.cancelar_reserva_cliente, name='cancelar_reserva_cliente'),
+    path('editar_entrenador/', views.editar_entrenador, name='editar_entrenador'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
