@@ -31,11 +31,6 @@ def authenticate_user(correo, password):
     except Usuario.DoesNotExist:
         return None
     
-def logout_view(request):
-    request.session.flush()
-    messages.success(request, "Has cerrado la sesión con éxito.")
-    return redirect('home')
-
 def crear_rol(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
