@@ -653,7 +653,6 @@
   </div>
 
   <script>
-    // Array con los IDs de todas las secciones del dashboard
     const sections = [
       'dashboardContent',
       'registrarClaseContent',
@@ -662,14 +661,12 @@
       'listadoSesionesContent'
     ];
   
-    // Función que oculta todas las secciones y muestra solo la indicada
     function showSection(sectionId) {
       sections.forEach(id => {
         document.getElementById(id).style.display = (id === sectionId) ? 'block' : 'none';
       });
     }
   
-    // Asignación de event listeners a los enlaces de navegación
     document.getElementById('link-dashboard').addEventListener('click', function(e) {
       e.preventDefault();
       showSection('dashboardContent');
@@ -691,7 +688,6 @@
       showSection('listadoSesionesContent');
     });
   
-    // Toggle de la sidebar
     document.getElementById('toggleSidebar').addEventListener('click', function() {
       if (document.body.classList.contains('sidebar-hidden')) {
         document.body.classList.remove('sidebar-hidden');
@@ -702,7 +698,6 @@
       }
     });
   
-    // Lógica para el modal de edición de clases
     var editarClaseModal = document.getElementById('editarClaseModal');
     editarClaseModal.addEventListener('show.bs.modal', function (event) {
       var button = event.relatedTarget;

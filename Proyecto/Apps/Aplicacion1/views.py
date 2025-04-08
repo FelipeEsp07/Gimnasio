@@ -11,6 +11,7 @@ import os
 from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, InscripcionClase, SesionPersonalizada
 from django.core.exceptions import ValidationError
 
+
 def home(request):
     planes = PlanMembresia.objects.all()
     clases_grupales = ClaseGrupal.objects.all()
