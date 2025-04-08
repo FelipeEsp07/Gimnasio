@@ -6,6 +6,8 @@
   <title>Registro de Clientes - Gimnasio</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
@@ -15,6 +17,16 @@
       color: #121212;
       height: 100vh;
       margin: 0;
+    }
+    
+    .alert-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      z-index: 9999;
     }
     
     .container-registro {
@@ -185,19 +197,66 @@
         border: none;
       }
     }
+    
+    .custom-alert {
+      border-radius: 12px;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: 500;
+      animation: fadeInUp 0.6s ease;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: none;
+    }
+    
+    .alert-error,
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: none;
+    }
+    
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: none;
+    }
+    
+    .alert-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: none;
+    }
   </style>
 </head>
 <body>
 
+  {% if messages %}
+    <div class="alert-container">
+      {% for message in messages %}
+        <div class="alert alert-dismissible fade show custom-alert alert-{{ message.tags }}" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
   <div class="container container-registro">
     <div class="row-registro">
-      <!-- Sección de Información -->
       <div class="info-section">
         <h2>¡Bienvenido al Gimnasio!</h2>
         <p>Regístrate para comenzar tu transformación y acceder a nuestros programas y entrenamientos personalizados.</p>
         <a class="btn-signin" href="{% url 'login_clientes' %}">Iniciar Sesión</a>
       </div>
-      <!-- Sección del Formulario -->
       <div class="form-section">
         <h2>Crear Cuenta</h2>
         <form action="{% url 'reg_clientes' %}" method="POST" enctype="multipart/form-data">
