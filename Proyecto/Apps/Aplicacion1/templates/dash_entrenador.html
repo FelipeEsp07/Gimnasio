@@ -16,7 +16,6 @@
       --sidebar-bg: rgba(0, 0, 0, 0.9);
       --text-dark: #121212;
     }
-
     html, body {
       height: 100%;
       margin: 0;
@@ -25,7 +24,6 @@
       color: #fff;
       overflow-x: hidden;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -39,7 +37,6 @@
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-
     body.sidebar-hidden .sidebar {
       transform: translateX(-100%);
     }
@@ -73,7 +70,6 @@
       transform: translateX(10px);
       color: var(--primary);
     }
-
     .top-navbar {
       background-color: var(--sidebar-bg);
       padding: 40px 50px;
@@ -117,7 +113,6 @@
     .toggle-sidebar:hover {
       color: var(--primary);
     }
-
     .main-content {
       margin-left: 0;
       padding: 40px;
@@ -125,7 +120,6 @@
       color: var(--text-dark);
       min-height: 100vh;
       transition: margin-left 0.3s ease;
-      display: none;
       overflow-y: auto;
     }
     body.sidebar-visible .main-content {
@@ -137,7 +131,6 @@
     .fade-in {
       animation: fadeIn 0.8s ease;
     }
-
     .container-registro {
       display: flex;
       justify-content: center;
@@ -197,7 +190,6 @@
       background-color: #c92a38;
       transform: scale(1.05);
     }
-
     .table-responsive tr {
       transition: background-color 0.3s ease;
     }
@@ -208,14 +200,12 @@
       padding: 12px 15px;
       vertical-align: middle;
     }
-
     .btn {
       transition: transform 0.3s ease;
     }
     .btn:hover {
       transform: scale(1.05);
     }
-
     .modal-content {
       border-radius: 10px;
       border: 2px solid var(--primary);
@@ -236,39 +226,35 @@
       transform: scale(1.05);
     }
     .btn-custom {
-    background-color: #e63946;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-weight: 500;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
-  }
-
-  .btn-custom:hover {
-    background-color: #d62839;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(214, 40, 57, 0.3);
-  }
-
-  .btn-custom:active {
-    transform: scale(0.97);
-  }
-
-  .profile-picture {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #e63946;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    transition: transform 0.3s ease;
-  }
-
-  .profile-picture:hover {
-    transform: scale(1.05);
-  }
+      background-color: #e63946;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
+    }
+    .btn-custom:hover {
+      background-color: #d62839;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(214, 40, 57, 0.3);
+    }
+    .btn-custom:active {
+      transform: scale(0.97);
+    }
+    .profile-picture {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #e63946;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease;
+    }
+    .profile-picture:hover {
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body class="sidebar-hidden">
@@ -281,7 +267,8 @@
     <a href="#listadoSesiones" id="link-listado-sesiones">Sesiones Personalizadas</a>
     <a href="#reportarProblemas" id="link-reportar-problemas">Reportar Problemas</a>
   </div> 
-    <!-- Top Navbar -->
+
+  <!-- Top Navbar -->
   <div class="top-navbar">
     <div class="d-flex align-items-center">
       <button class="toggle-sidebar" id="toggleSidebar">&#9776;</button>
@@ -418,9 +405,11 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
   <!-- Sección Formulario Clases Grupales -->
-  <div class="main-content" id="registrarClaseContent">
+  <div class="main-content" id="registrarClaseContent" style="display: none;">
     <div class="content-wrapper container fade-in">
       <!-- Formulario para registrar clase grupal -->
       <div class="container-registro">
@@ -513,6 +502,7 @@
       </div>
     </div>
   </div>
+
   <!-- Modal para editar clase grupal -->
   <div class="modal fade" id="editarClaseModal" tabindex="-1" aria-labelledby="editarClaseModalLabel" aria-hidden="true" style="z-index: 1300;">
     <div class="modal-dialog modal-dialog-centered">
@@ -563,7 +553,7 @@
   </div>
 
   <!-- Sección Listado Clases Grupales -->
-  <div class="main-content" id="listadoClasesContent">
+  <div class="main-content" id="listadoClasesContent" style="display: none;">
     <div class="content-wrapper container fade-in">
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Listado de Clases Grupales e Inscripciones</h2>
       {% for clase in clases %}
@@ -603,6 +593,7 @@
       {% endfor %}
     </div>
   </div>
+
   <!-- Sección Listado Sesiones Personalizadas -->
   <div class="main-content" id="listadoSesionesContent" style="display: none;">
     <div class="content-wrapper container fade-in">
@@ -642,8 +633,9 @@
       {% endif %}
     </div>
   </div>
+
   <!-- Sección Reportar Problemas -->
-  <div class="main-content" id="reportarProblemasContent">
+  <div class="main-content" id="reportarProblemasContent" style="display: none;">
     <div class="content-wrapper container fade-in">
       <div class="container-registro">
         <div class="row-registro">
@@ -659,8 +651,8 @@
       </div>
     </div>
   </div>
+
   <script>
-    // Array con los IDs de todas las secciones del dashboard
     const sections = [
       'dashboardContent',
       'registrarClaseContent',
@@ -669,14 +661,12 @@
       'listadoSesionesContent'
     ];
   
-    // Función que oculta todas las secciones y muestra solo la indicada
     function showSection(sectionId) {
       sections.forEach(id => {
         document.getElementById(id).style.display = (id === sectionId) ? 'block' : 'none';
       });
     }
   
-    // Asignación de event listeners a los enlaces de navegación
     document.getElementById('link-dashboard').addEventListener('click', function(e) {
       e.preventDefault();
       showSection('dashboardContent');
@@ -698,7 +688,6 @@
       showSection('listadoSesionesContent');
     });
   
-    // Toggle de la sidebar
     document.getElementById('toggleSidebar').addEventListener('click', function() {
       if (document.body.classList.contains('sidebar-hidden')) {
         document.body.classList.remove('sidebar-hidden');
@@ -709,7 +698,6 @@
       }
     });
   
-    // Lógica para el modal de edición de clases
     var editarClaseModal = document.getElementById('editarClaseModal');
     editarClaseModal.addEventListener('show.bs.modal', function (event) {
       var button = event.relatedTarget;
