@@ -58,7 +58,7 @@ def eliminar_rol(request, id):
     return redirect('dashboard_admin')
 
 def generar_qr(usuario):
-    data = f"http://127.0.0.1:8000/acceso/{usuario.id}-{usuario.correo}"
+    data = f"https://gimnasio-production.up.railway.app/acceso/{usuario.id}-{usuario.correo}"
     qr_img = qrcode.make(data)
     buffer = BytesIO()
     qr_img.save(buffer, format="PNG")
