@@ -10,7 +10,6 @@ urlpatterns = [
     path('reg_clientes/', views.reg_clientes, name='reg_clientes'),
     path('reg_empleados/', views.reg_empleados, name='reg_empleados'),
     path('login_clientes/', views.login_clientes, name='login_clientes'),
-    path('logout/', views.logout_view, name='logout'),
     path('dashboard_admin/', views.dashboard_admin, name='dashboard_admin'),
     path('eliminar_empleado/<int:id>/', views.eliminar_empleado, name='eliminar_empleado'),
     path('editar_empleado/<int:id>/', views.editar_empleado, name='editar_empleado'),
