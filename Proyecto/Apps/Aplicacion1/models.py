@@ -124,28 +124,22 @@ class ClaseGrupal(models.Model):
         next_date = today + timedelta(days=days_ahead)
         return next_date
     
-    @property
-    def espacios_restantes(self):
-        inscritos = self.inscripciones.count()
-        return self.cupo_maximo - inscritos
-  
-    
 class InscripcionClase(models.Model):
-    clase = models.ForeignKey(ClaseGrupal, on_delete=models.CASCADE, related_name='inscripciones')
-    cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='inscripciones')
-    fecha_inscripcion = models.DateTimeField(auto_now_add=True)
+        clase = models.ForeignKey(ClaseGrupal, on_delete=models.CASCADE, related_name='inscripciones')
+        cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='inscripciones')
+        fecha_inscripcion = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.clase.nombre} - {self.cliente.nombre}"
+        def __str__(self):
+            return f"{self.clase.nombre} - {self.cliente.nombre}"
 
-    def clean(self):
-        inscripciones_actuales = self.clase.inscripciones.exclude(pk=self.pk).count()
-        if inscripciones_actuales >= self.clase.cupo_maximo:
-            raise ValidationError("La clase ha alcanzado su cupo máximo.")
+        def clean(self):
+            inscripciones_actuales = self.clase.inscripciones.exclude(pk=self.pk).count()
+            if inscripciones_actuales >= self.clase.cupo_maximo:
+                raise ValidationError("La clase ha alcanzado su cupo máximo.")
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+        def save(self, *args, **kwargs):
+            self.full_clean()
+            super().save(*args, **kwargs)
 
 
 class SesionPersonalizada(models.Model):

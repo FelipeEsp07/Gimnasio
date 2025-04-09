@@ -1,1 +1,0 @@
-start: gunicorn Proyecto.wsgi:application --log-file -

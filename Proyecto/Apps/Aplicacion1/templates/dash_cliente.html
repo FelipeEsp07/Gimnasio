@@ -431,7 +431,6 @@
               </div>
             </div>
           </div>
-          <!-- Sección Código QR -->
           <div class="text-center my-4">
             <h5 class="fw-bold">Tu Código QR de Acceso</h5>
             {% if cliente.qr_code %}
@@ -508,7 +507,6 @@
     <!-- Sección de Reservas -->
     <section id="reservas" class="py-5 content-section" style="display: none;">
       <div class="container">
-        <!-- Formulario para Agendar Sesión Personalizada -->
         <div class="container-registro">
           <div class="row-registro">
             <div class="form-section">
@@ -533,7 +531,6 @@
             </div>
           </div>
         </div>
-        <!-- Tabla de Mis Reservas (solo en la pestaña de Reservas) -->
         <div class="container mt-5">
           <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Mis Reservas</h2>
           <div class="table-responsive">
@@ -571,7 +568,6 @@
                     {% endif %}
                   </td>
                   <td>
-                    <!-- Botón para abrir el modal de edición -->
                     <button type="button" class="btn btn-sm btn-custom editar-btn" 
                             data-bs-toggle="modal" 
                             data-bs-target="#editarReservaModal"
@@ -582,11 +578,8 @@
                             data-comentarios="{{ reserva.comentarios }}">
                       Editar
                     </button>
-                    <!-- Botón para cancelar la reserva -->
-                    <a href="{% url 'cancelar_reserva_cliente' reserva.id %}" class="btn btn-sm btn-danger">Cancelar Reserva</a>
-                    onclick="return confirm('¿Estás seguro de cancelar esta reserva?');">
-                      Cancelar
-                    </a>
+                    <a href="{% url 'cancelar_reserva_cliente' reserva.id %}" class="btn btn-sm btn-custom">Cancelar Reserva</a>
+                  </a>
                   </td>
                 </tr>
                 {% empty %}

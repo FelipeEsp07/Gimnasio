@@ -8,6 +8,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Bootstrap Icons (para mensajes de alerta) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <style>
     :root {
       --primary: #e63946;      
@@ -252,6 +254,45 @@
       transform: scale(1.05);
     }
     
+    /* Bloque único de mensajes de alerta */
+    .custom-alert {
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      animation: fadeInUp 0.6s ease;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: none;
+    }
+    .alert-error,
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: none;
+    }
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: none;
+    }
+    .alert-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: none;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
     @media (max-width: 768px) {
       .row-registro {
         flex-direction: column;
@@ -260,10 +301,12 @@
         border-radius: 0;
       }
     }
+    .main-content {
+      padding-top: 140px;
+    }
   </style>
 </head>
 <body class="sidebar-hidden">
-  <!-- Sidebar -->
   <div class="sidebar">
     <h2>Admin GYM</h2>
     <a href="#dashboard" id="link-dashboard">Inicio Dashboard</a>
@@ -272,9 +315,7 @@
     <a href="#membresias" id="link-crear-membresia">Gestión de membresías</a>
     <a href="#equipos" id="link-crear-equipo">Monitoreo de equipos</a>
     <a href="#acceso" id="link-acceso-usuarios">Acceso de usuarios</a>
-    <a href="#configuracion">Configuración</a>
   </div> 
-  <!-- Header -->
   <div class="top-navbar">
     <div class="d-flex align-items-center">
       <button class="toggle-sidebar" id="toggleSidebar">&#9776;</button>
@@ -282,12 +323,24 @@
     </div>
     <a href="#" class="logout">Cerrar Sesión</a>
   </div>
+
   <!-- Sección de Inicio Dashboard -->
   <div class="main-content" id="dashboardContent" style="display: block;">
     <div class="content-wrapper container fade-in">
+      <!-- Bloque de mensajes -->
+      {% if messages %}
+        <div class="mt-3">
+          {% for message in messages %}
+            <div class="alert alert-dismissible fade show custom-alert alert-{{ message.tags }}" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Resumen del Sistema</h2>
       <div class="row">
-        <!-- Tarjeta Total de Usuarios -->
         <div class="col-md-3 mb-4">
           <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div class="card-body">
@@ -296,7 +349,6 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta Total de Roles -->
         <div class="col-md-3 mb-4">
           <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div class="card-body">
@@ -305,7 +357,6 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta Total de Membresías -->
         <div class="col-md-3 mb-4">
           <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div class="card-body">
@@ -314,7 +365,6 @@
             </div>
           </div>
         </div>
-        <!-- Tarjeta Total de Equipos -->
         <div class="col-md-3 mb-4">
           <div class="card text-center" style="border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
             <div class="card-body">
@@ -326,10 +376,10 @@
       </div>
     </div>
   </div>
+
   <!-- Sección de Roles -->
   <div class="main-content" id="mainContent">
     <div class="content-wrapper container fade-in">
-      <!-- Formulario para crear rol -->
       <div class="container-registro">
         <div class="row-registro">
           <div class="form-section">
@@ -343,7 +393,6 @@
         </div>
       </div>
       <div style="height: 80px;"></div>
-      <!-- Tabla de roles -->
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Roles Existentes</h2>
       <div class="table-responsive fade-in">
         <table class="table table-striped">
@@ -373,10 +422,10 @@
       </div>
     </div>
   </div>
+
   <!-- Sección de Gestión de Empleados -->
   <div class="main-content" id="empleadoContent" style="display: none;">
     <div class="content-wrapper container fade-in">
-      <!-- Formulario para registrar empleado -->
       <div class="container-registro">
         <div class="row-registro">
           <div class="form-section">
@@ -411,7 +460,6 @@
         </div>
       </div>
       <div style="height: 80px;"></div>
-      <!-- Tabla de empleados -->
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Usuarios Existentes</h2>
       <div class="table-responsive fade-in">
         <table class="table table-striped">
@@ -434,7 +482,6 @@
               <td>{{ empleado.correo }}</td>
               <td>{{ empleado.rol.nombre }}</td>
               <td>
-                <!-- Botón para abrir el modal de edición -->
                 <button type="button" class="btn btn-sm btn-primary editar-emp-btn" 
                         data-id="{{ empleado.id }}"
                         data-nombre="{{ empleado.nombre }}"
@@ -462,6 +509,7 @@
       </div>
     </div>
   </div>
+
   <!-- Modal para editar empleado -->
   <div class="modal fade" id="editarEmpleadoModal" tabindex="-1" aria-labelledby="editarEmpleadoModalLabel" aria-hidden="true" style="z-index: 1300;">
     <div class="modal-dialog modal-dialog-centered">
@@ -511,10 +559,10 @@
       </div>
     </div>
   </div>
+
   <!-- Sección de Gestión de Membresías -->
   <div class="main-content" id="membresiaContent" style="display: none;">
     <div class="content-wrapper container fade-in">
-      <!-- Formulario para registrar plan de membresía -->
       <div class="container-registro">
         <div class="row-registro">
           <div class="form-section">
@@ -532,7 +580,6 @@
         </div>
       </div>
       <div style="height: 80px;"></div>
-      <!-- Tabla de planes -->
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Planes Existentes</h2>
       <div class="table-responsive fade-in">
         <table class="table table-striped">
@@ -580,6 +627,7 @@
       </div>
     </div>
   </div>
+
   <!-- Modal para editar plan de membresía -->
   <div class="modal fade" id="editarPlanModal" tabindex="-1" aria-labelledby="editarPlanModalLabel" aria-hidden="true" style="z-index: 1300;">
     <div class="modal-dialog modal-dialog-centered">
@@ -616,10 +664,10 @@
       </div>
     </div>
   </div>
+
   <!-- Sección de Gestión de Equipos -->
   <div class="main-content" id="equipoContent" style="display: none;">
     <div class="content-wrapper container fade-in">
-      <!-- Formulario para registrar equipo -->
       <div class="container-registro">
         <div class="row-registro">
           <div class="form-section">
@@ -645,7 +693,6 @@
         </div>
       </div>
       <div style="height: 80px;"></div>
-      <!-- Tabla de equipos -->
       <h2 class="text-center" style="color: var(--primary); margin-bottom: 20px;">Equipos Registrados</h2>
       <div class="table-responsive fade-in">
         <table class="table table-striped">
@@ -696,6 +743,7 @@
       </div>
     </div>
   </div>
+
   <!-- Modal para editar equipo -->
   <div class="modal fade" id="editarEquipoModal" tabindex="-1" aria-labelledby="editarEquipoModalLabel" aria-hidden="true" style="z-index: 1300;">
     <div class="modal-dialog modal-dialog-centered">
@@ -732,6 +780,7 @@
       </div>
     </div>
   </div>
+  
   <!-- Sección de Acceso de Usuarios -->
   <div class="main-content" id="accesoUsuariosContent" style="display: none;">
     <div class="content-wrapper container fade-in">
@@ -768,6 +817,7 @@
       </div>
     </div>
   </div>
+  
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -778,6 +828,7 @@
       document.getElementById('empleadoContent').style.display = 'none';
       document.getElementById('membresiaContent').style.display = 'none';
       document.getElementById('equipoContent').style.display = 'none';
+      document.getElementById('accesoUsuariosContent').style.display = 'none';
     }); 
     document.getElementById('toggleSidebar').addEventListener('click', function() {
       if(document.body.classList.contains('sidebar-hidden')) {
@@ -795,6 +846,7 @@
       document.getElementById('empleadoContent').style.display = 'none';
       document.getElementById('membresiaContent').style.display = 'none';
       document.getElementById('equipoContent').style.display = 'none';
+      document.getElementById('accesoUsuariosContent').style.display = 'none';
     });
     document.getElementById('link-crear-empleado').addEventListener('click', function(e) {
       e.preventDefault();
@@ -803,6 +855,7 @@
       document.getElementById('empleadoContent').style.display = 'block';
       document.getElementById('membresiaContent').style.display = 'none';
       document.getElementById('equipoContent').style.display = 'none';
+      document.getElementById('accesoUsuariosContent').style.display = 'none';
     });
     document.getElementById('link-crear-membresia').addEventListener('click', function(e) {
       e.preventDefault();
@@ -811,6 +864,7 @@
       document.getElementById('empleadoContent').style.display = 'none';
       document.getElementById('membresiaContent').style.display = 'block';
       document.getElementById('equipoContent').style.display = 'none';
+      document.getElementById('accesoUsuariosContent').style.display = 'none';
     });
     document.getElementById('link-crear-equipo').addEventListener('click', function(e) {
       e.preventDefault();
@@ -819,6 +873,16 @@
       document.getElementById('empleadoContent').style.display = 'none';
       document.getElementById('membresiaContent').style.display = 'none';
       document.getElementById('equipoContent').style.display = 'block';
+      document.getElementById('accesoUsuariosContent').style.display = 'none';
+    });
+    document.getElementById('link-acceso-usuarios').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('dashboardContent').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('empleadoContent').style.display = 'none';
+      document.getElementById('membresiaContent').style.display = 'none';
+      document.getElementById('equipoContent').style.display = 'none';
+      document.getElementById('accesoUsuariosContent').style.display = 'block';
     });
     var editarEquipoModal = document.getElementById('editarEquipoModal');
     editarEquipoModal.addEventListener('show.bs.modal', function (event) {
@@ -870,15 +934,6 @@
       document.getElementById('emp_rol_edit').value = rolId;
       var form = document.getElementById('editarEmpleadoForm');
       form.action = "{% url 'editar_empleado' 0 %}".replace('0', empId);
-    });
-    document.getElementById('link-acceso-usuarios').addEventListener('click', function(e) {
-      e.preventDefault();
-      document.getElementById('dashboardContent').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'none';
-      document.getElementById('empleadoContent').style.display = 'none';
-      document.getElementById('membresiaContent').style.display = 'none';
-      document.getElementById('equipoContent').style.display = 'none';
-      document.getElementById('accesoUsuariosContent').style.display = 'block';
     });
   </script>
 </body>

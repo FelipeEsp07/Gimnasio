@@ -11,7 +11,6 @@ import os
 from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, InscripcionClase, SesionPersonalizada
 from django.core.exceptions import ValidationError
 
-
 def home(request):
     planes = PlanMembresia.objects.all()
     clases_grupales = ClaseGrupal.objects.all()
@@ -59,7 +58,7 @@ def eliminar_rol(request, id):
     return redirect('dashboard_admin')
 
 def generar_qr(usuario):
-    data = f"https://gimnasio-production.up.railway.app/acceso/{usuario.id}-{usuario.correo}"
+    data = f"http://127.0.0.1:8000/acceso/{usuario.id}-{usuario.correo}"
     qr_img = qrcode.make(data)
     buffer = BytesIO()
     qr_img.save(buffer, format="PNG")
@@ -745,7 +744,7 @@ def cancelar_sesion_entrenador(request, reserva_id):
     sesion = get_object_or_404(SesionPersonalizada, id=reserva_id, entrenador_id=usuario_id)
     
     sesion.delete()
-    messages.success(request, "Sesión cancelada y eliminada de la base de datos.")
+    messages.success(request, "Sesión cancelada")
     return redirect('dashboard_entrenador')
 
 def cancelar_reserva_cliente(request, reserva_id):
@@ -757,7 +756,7 @@ def cancelar_reserva_cliente(request, reserva_id):
     reserva = get_object_or_404(SesionPersonalizada, id=reserva_id, cliente_id=usuario_id)
     
     reserva.delete()
-    messages.success(request, "Reserva cancelada y eliminada de la base de datos.")
+    messages.success(request, "Sesión cancelada")
     return redirect('dashboard_cliente')
 
 def editar_entrenador(request):
