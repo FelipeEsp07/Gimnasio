@@ -353,7 +353,9 @@
           <li class="nav-item"><a class="nav-link" href="#planes">Planes</a></li>
           <li class="nav-item"><a class="nav-link" href="#reservas">Reservas</a></li>
           <li class="nav-item"><a class="nav-link" href="#pago-membresia">Pagos</a></li>
-          <li class="nav-item"><a class="nav-link" href="{#}">Cerrar Sesión</a></li>
+          <li class="nav-item">
+            <a class="nav-link btn-logout" href="{% url 'logout' %}">Cerrar Sesión</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -689,6 +691,7 @@
   <script>
     const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
     const sections = document.querySelectorAll('.content-section');
+  
     function showSection(id) {
       sections.forEach(section => {
         section.style.display = 'none';
@@ -698,15 +701,19 @@
         target.style.display = 'block';
       }
     }
+  
     showSection('#perfil');
+  
     navLinks.forEach(link => {
       link.addEventListener('click', function(e) {
-        e.preventDefault();
         const targetId = this.getAttribute('href');
-        showSection(targetId);
+        if (targetId.startsWith("#")) {
+          e.preventDefault();
+          showSection(targetId);
+        }
       });
     });
-
+  
     var editarReservaModal = document.getElementById('editarReservaModal');
     editarReservaModal.addEventListener('show.bs.modal', function (event) {
       var button = event.relatedTarget;
@@ -715,7 +722,7 @@
       var fecha = button.getAttribute('data-fecha');
       var hora = button.getAttribute('data-hora');
       var comentarios = button.getAttribute('data-comentarios');
-      
+        
       var form = document.getElementById('editarReservaForm');
       form.action = "{% url 'editar_reserva' 0 %}".replace("0", reservaId);
       document.getElementById('modal-entrenador').value = entrenadorId;

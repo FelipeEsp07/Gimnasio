@@ -201,14 +201,25 @@ def login_clientes(request):
     return render(request, 'login_clientes.html')
 
 def dashboard_admin(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión.")
+        return redirect('login_clientes')
+    
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        messages.error(request, "El usuario no existe.")
+        return redirect('login_clientes')
+    
     roles = Rol.objects.all()
     empleados = Usuario.objects.all()
     planes = PlanMembresia.objects.all()
     equipos = Equipo.objects.all()
     access_logs = AccessLog.objects.order_by('-fecha_ingreso')
 
-
     context = {
+        'usuario': usuario, 
         'roles': roles,
         'empleados': empleados,
         'planes': planes,
@@ -218,7 +229,6 @@ def dashboard_admin(request):
         'total_membresias': planes.count(),
         'total_equipos': equipos.count(),
         'access_logs': access_logs,
-
     }
     return render(request, 'dash_admin.html', context)
 
@@ -790,3 +800,8 @@ def editar_entrenador(request):
         return redirect('dashboard_entrenador')
     
     return render(request, 'dash_entrenador.html', {'usuario': usuario})
+
+def logout_view(request):
+    request.session.flush()
+    messages.success(request, "Has cerrado sesión exitosamente.")
+    return redirect('login_clientes')

@@ -304,6 +304,20 @@
     .main-content {
       padding-top: 140px;
     }
+    .btn-logout {
+      color: #fff; 
+      background-color: transparent;
+      border: none; 
+      text-decoration: none;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-logout:hover {
+      color: #e63946;
+      border: 1px solid #e63946; 
+      border-radius: 4px; 
+      padding: 4px 8px; 
+    }
   </style>
 </head>
 <body class="sidebar-hidden">
@@ -321,7 +335,9 @@
       <button class="toggle-sidebar" id="toggleSidebar">&#9776;</button>
       <div class="brand">Panel de Control</div>
     </div>
-    <a href="#" class="logout">Cerrar Sesión</a>
+    <li class="nav-item">
+      <a class="nav-link btn-logout" href="{% url 'logout' %}">Cerrar Sesión</a>
+    </li>
   </div>
 
   <!-- Sección de Inicio Dashboard -->

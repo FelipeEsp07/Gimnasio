@@ -6,6 +6,7 @@ from django.conf import settings
 urlpatterns = [
     path('', views.home, name='home'),
     path('crear_rol/', views.crear_rol, name='crear_rol'),
+    path('logout/', views.logout_view, name='logout'),
     path('eliminar_rol/<int:id>/', views.eliminar_rol, name='eliminar_rol'),
     path('reg_clientes/', views.reg_clientes, name='reg_clientes'),
     path('reg_empleados/', views.reg_empleados, name='reg_empleados'),
