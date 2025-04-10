@@ -36,6 +36,11 @@ urlpatterns = [
     path('cancelar_sesion_entrenador/<int:reserva_id>/', views.cancelar_sesion_entrenador, name='cancelar_sesion_entrenador'),
     path('cancelar_reserva_cliente/<int:reserva_id>/', views.cancelar_reserva_cliente, name='cancelar_reserva_cliente'),
     path('editar_entrenador/', views.editar_entrenador, name='editar_entrenador'),
-
+    path('plan/contratar/<int:plan_id>/', views.contratar_plan, name='contratar_plan'),
+    path('plan/success/', views.plan_success, name='plan_success'),
+    path('plan/cancel/', views.plan_cancel, name='plan_cancel'),
+    path('plan/recibo/<int:plan_id>/', views.recibo_plan, name='recibo_plan'),
+    path('planes/contratados/', views.planes_contratados, name='planes_contratados'),
+    path('recibo/<int:compra_id>/pdf/', views.descargar_recibo_pdf, name='descargar_recibo_pdf'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

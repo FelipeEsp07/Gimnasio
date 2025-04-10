@@ -1,23 +1,16 @@
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-bny*9t_o2%h$9$#@0jyx&t%zo(qp%etg+$!r)pxp^g&b5&wgfh'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# settings.py
+STRIPE_PUBLIC_KEY = 'pk_test_51RBEjVPSTJcjJ6jGasH32T2KEgLmDnutQMVqkjXqu7HB6yKg6byh1EGpZwizOB1n2ryyd5JAM8NtkpkMOqSEpQ9E00qIzsfDEO'
+STRIPE_SECRET_KEY = 'sk_test_51RBEjVPSTJcjJ6jGSsM5UAhtBWDhNutLwilz6BArqXdUShNrjeyTK58Vb04zZE91ZbaYaZhkjT9dQgl0bCk9lYzE00Sa4Sifzs'
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
+# Incluye el wildcard de ngrok-free.app
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,7 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Apps.Aplicacion1'
+    'Apps.Aplicacion1',
 ]
 
 MIDDLEWARE = [
@@ -44,6 +37,7 @@ ROOT_URLCONF = 'Proyecto.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # Si tus templates están en Apps/Aplicacion1/templates, Django los encontrará con APP_DIRS=True
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -59,62 +53,48 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Proyecto.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# --- Conexión a MySQL ---
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'gimnasio' ,
-        'USER': 'root' ,
-        'PASSWORD': '12345' ,
-        'HOST': 'localhost' ,
-        'PORT': 3306 ,
+        'NAME': 'gimnasio',
+        'USER': 'root',
+        'PASSWORD': '12345',
+        'HOST': 'localhost',
+        'PORT': 3306,
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
+# --- Validadores de contraseña (opcional) ---
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
+# --- Internacionalización ---
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+# --- Archivos estáticos ---
 STATIC_URL = '/static/'
+# Si más adelante pones archivos en Apps/Aplicacion1/static/, Django los encontrará
+STATICFILES_DIRS = [
+    BASE_DIR / 'Apps' / 'Aplicacion1' / 'static',
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # para collectstatic (producción)
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# --- Archivos de usuario (media) ---
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.app']
+# settings.py
+WKHTMLTOPDF_CMD = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"

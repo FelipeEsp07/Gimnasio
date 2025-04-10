@@ -139,7 +139,7 @@
       color: #000;
       flex: 1;
     }
-
+  
     .service-card,
     .product-card,
     .group-class-card {
@@ -187,20 +187,20 @@
       color: #155724;
       border: none;
     }
-
+  
     .alert-error,
     .alert-danger {
       background-color: #f8d7da;
       color: #721c24;
       border: none;
     }
-
+  
     .alert-warning {
       background-color: #fff3cd;
       color: #856404;
       border: none;
     }
-
+  
     .alert-info {
       background-color: #d1ecf1;
       color: #0c5460;
@@ -480,7 +480,7 @@
     </section>
 
     <!-- Sección de Planes de Membresía -->
-    <section id="planes" class="py-5 content-section" style="background: #fff; color: #000; display: none;">
+    <section id="planes" class="py-5 content-section" style="background: #fff; color: #000;">
       <div class="container">
         <h2 class="mb-5 text-center" style="color: #e63946;">Planes de Membresía</h2>
         <div class="row">
@@ -495,7 +495,8 @@
                 <p class="card-text">{{ plan.descripcion }}</p>
                 <p class="mb-1" style="font-size: 20px; font-weight: bold; color: #e63946;">${{ plan.precio }}</p>
                 <p class="mb-3">Duración: {{ plan.duracion_meses }} meses</p>
-                <a href="#" class="btn btn-warning">Contratar Plan</a>
+                <!-- Redirige a la vista de recibo en lugar de directamente a Stripe -->
+                <a href="{% url 'recibo_plan' plan.id %}" class="btn btn-warning">Contratar Plan</a>
               </div>
             </div>
           </div>
@@ -581,7 +582,6 @@
                       Editar
                     </button>
                     <a href="{% url 'cancelar_reserva_cliente' reserva.id %}" class="btn btn-sm btn-custom">Cancelar Reserva</a>
-                  </a>
                   </td>
                 </tr>
                 {% empty %}
@@ -592,6 +592,44 @@
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Listado de Planes Contratados -->
+    <section id="pago-membresia" class="py-5 content-section">
+      <div class="container">
+        <h2 class="mb-5 text-center" style="color: #e63946;">Mis Planes Contratados</h2>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Fecha de Compra</th>
+                <th>Plan</th>
+                <th>Precio (COP)</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for compra in compras %}
+              <tr>
+                <td>{{ compra.fecha_compra|date:"d/m/Y H:i" }}</td>
+                <td>{{ compra.plan.nombre }}</td>
+                <td>${{ compra.plan.precio }}</td>
+                <td>{{ compra.status|capfirst }}</td>
+                <td>
+                  <a href="{% url 'descargar_recibo_pdf' compra.id %}" class="btn btn-warning btn-sm">
+                    Ver Recibo </a>               
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" class="text-center">No has contratado ningún plan.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>

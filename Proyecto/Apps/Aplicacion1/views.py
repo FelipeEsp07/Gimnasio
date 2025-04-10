@@ -8,8 +8,16 @@ from io import BytesIO
 from django.core.files import File
 from django.http import FileResponse
 import os
-from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, InscripcionClase, SesionPersonalizada
+from .models import Usuario, Rol, PlanMembresia, Equipo, AccessLog, ClaseGrupal, InscripcionClase, SesionPersonalizada, CompraPlan
 from django.core.exceptions import ValidationError
+import stripe
+from django.conf import settings
+from django.urls import reverse
+from django.conf import settings
+import pdfkit
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from dateutil.relativedelta import relativedelta
 
 def home(request):
     planes = PlanMembresia.objects.all()
@@ -520,6 +528,7 @@ def dashboard_cliente(request):
     planes = PlanMembresia.objects.all()
     entrenadores = Usuario.objects.filter(rol__nombre__iexact='Entrenador')
     reservas = SesionPersonalizada.objects.filter(cliente=usuario)
+    compras = CompraPlan.objects.filter(usuario=usuario, status='paid').order_by('-fecha_compra')
 
     context = {
         'cliente': usuario,
@@ -527,6 +536,7 @@ def dashboard_cliente(request):
         'planes': planes,
         'entrenadores': entrenadores,
         'reservas': reservas,
+        'compras': compras, 
 
     }
     return render(request, 'dash_cliente.html', context)
@@ -805,3 +815,134 @@ def logout_view(request):
     request.session.flush()
     messages.success(request, "Has cerrado sesión exitosamente.")
     return redirect('login_clientes')
+
+def recibo_plan(request, plan_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para contratar un plan.")
+        return redirect('login_clientes')
+
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    plan = get_object_or_404(PlanMembresia, id=plan_id)
+
+    context = {
+        'usuario': usuario,
+        'plan': plan
+    }
+    return render(request, 'recibo_plan.html', context)
+
+def contratar_plan(request, plan_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para contratar un plan.")
+        return redirect('login_clientes')
+
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    plan = get_object_or_404(PlanMembresia, id=plan_id)
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    unit_price = int(plan.precio * 100)
+
+    if unit_price < 500:
+        messages.error(request, "El monto mínimo para procesar pagos es de 500 COP.")
+        return redirect('planes_disponibles')
+
+    checkout_session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'cop',
+                'product_data': {
+                    'name': plan.nombre,
+                },
+                'unit_amount': unit_price,
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+        success_url=request.build_absolute_uri(reverse('plan_success')) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse('plan_cancel')),
+        client_reference_id=usuario.id,
+    )
+
+    CompraPlan.objects.create(
+        usuario=usuario,
+        plan=plan,
+        payment_id=checkout_session.id,
+        status='pending',
+    )
+
+    return redirect(checkout_session.url)
+
+def plan_success(request):
+    session_id = request.GET.get('session_id')
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    session = stripe.checkout.Session.retrieve(session_id)
+    
+    compra = get_object_or_404(CompraPlan, payment_id=session.id)
+    compra.status = 'paid'
+    compra.save()
+    
+    usuario = compra.usuario
+    usuario.plan_activo = compra.plan
+    usuario.save()
+    
+    messages.success(request, "Plan contratado exitosamente.")
+    return redirect('dashboard_cliente')
+
+def plan_cancel(request):
+    messages.error(request, "El pago ha sido cancelado.")
+    return redirect('dashboard_cliente')
+
+def planes_contratados(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para ver tus planes.")
+        return redirect('login_clientes')
+    
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    compras_raw = CompraPlan.objects.filter(usuario=usuario)
+
+    compras = []
+    for compra in compras_raw:
+        fecha_fin = compra.fecha_compra + relativedelta(months=compra.plan.duracion_meses)
+        compras.append({
+            'compra': compra,
+            'fecha_fin': fecha_fin,
+        })
+
+    context = {
+        'compras': compras,
+    }
+    return render(request, 'planes_contratados.html', context)
+
+def descargar_recibo_pdf(request, compra_id):
+    # 1) Asegura que el usuario sólo acceda a su propia compra
+    usuario_id = request.session.get('usuario_id')
+    compra = get_object_or_404(CompraPlan, id=compra_id, usuario__id=usuario_id)
+
+    # 2) Renderiza tu plantilla recibo_plan.html con el contexto
+    html = render_to_string('recibo_plan.html', {
+        'usuario': compra.usuario,
+        'plan': compra.plan,
+        'compra': compra,
+    }, request=request)
+
+    # 3) Opciones de wkhtmltopdf
+    options = {
+        'enable-local-file-access': None, 
+        'print-media-type': None,          
+        'page-size': 'A4',
+        'encoding': 'UTF-8',
+        'no-outline': None,
+    }
+
+    # 4) Configuración apuntando al ejecutable
+    config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_CMD)
+
+    # 5) Genera el PDF a partir del HTML en memoria
+    pdf = pdfkit.from_string(html, False, options=options, configuration=config)
+
+    # 6) Devuélvelo como descarga
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="recibo_{compra.id}.pdf"'
+    return response

@@ -39,7 +39,7 @@ class Empleado(models.Model):
 class PlanMembresia(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField()
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    precio = models.IntegerField()
     duracion_meses = models.IntegerField()
     imagen = models.ImageField(upload_to='planes_membresia/', null=True, blank=True)
     def __str__(self):
@@ -162,3 +162,14 @@ class SesionPersonalizada(models.Model):
     def clean(self):
         if self.fecha < date.today():
             raise ValidationError("La fecha de la sesión no puede ser anterior al día de hoy.")
+
+
+class CompraPlan(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    plan = models.ForeignKey(PlanMembresia, on_delete=models.CASCADE)
+    fecha_compra = models.DateTimeField(auto_now_add=True)
+    payment_id = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=50, default='pending')
+    
+    def __str__(self):
+        return f"{self.usuario.nombre} - {self.plan.nombre}"

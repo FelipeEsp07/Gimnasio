@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recibo de Plan - GYM</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #fff;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      background: rgba(0, 0, 0, 0.9);
+      padding: 30px 0;
+    }
+    .navbar-brand {
+      color: #e63946;
+      font-weight: bold;
+      font-size: 40px;
+    }
+    .navbar .btn-volver {
+      color: #fff;
+      background: #e63946;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .navbar .btn-volver:hover {
+      background: #c92a38;
+    }
+    .main-container {
+      background: #fff;
+      color: #000;
+      padding: 40px 20px;
+      margin: 180px auto 40px;
+      border-radius: 8px;
+      max-width: 800px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .btn-custom, .btn-warning {
+      background: #e63946;
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .btn-custom:hover, .btn-warning:hover {
+      background: #c92a38;
+    }
+    .receipt-header {
+      border-bottom: 2px solid #e63946;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+      text-align: center;
+    }
+    .receipt-header h1 {
+      font-weight: bold;
+      color: #e63946;
+    }
+    .receipt-details h3 {
+      color: #e63946;
+      margin-bottom: 15px;
+    }
+    .receipt-details p {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .receipt-section {
+      margin-bottom: 30px;
+    }
+    .receipt-total {
+      border-top: 2px solid #e63946;
+      padding-top: 20px;
+      margin-top: 40px;
+    }
+    .receipt-total h2 {
+      font-size: 24px;
+      color: #000;
+      margin-bottom: 10px;
+    }
+    .receipt-total p {
+      font-size: 36px;
+      color: #000;
+      margin-bottom: 0;
+    }
+
+    @media print {
+      .navbar,
+      .no-print {
+        display: none !important;
+      }
+      .main-container {
+        margin-top: 40px !important;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">GYM</a>
+      <div class="ms-auto">
+        <a href="{% url 'dashboard_cliente' %}" class="btn btn-volver">Volver</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container main-container">
+    <div class="receipt-header">
+      <h1>Recibo de Compra</h1>
+      <p>Revisa los detalles de tu plan antes de confirmar la compra.</p>
+    </div>
+    
+    <div class="receipt-section receipt-details">
+      <h3>Datos del Cliente</h3>
+      <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+      <p><strong>Email:</strong> {{ usuario.correo }}</p>
+      <p><strong>Cédula:</strong> {{ usuario.cedula }}</p>
+      <p><strong>Teléfono:</strong> {{ usuario.telefono }}</p>
+      <p><strong>Fecha de Nacimiento:</strong> {{ usuario.fecha_nacimiento|date:"d/m/Y" }}</p>
+      <p><strong>Dirección:</strong> {{ usuario.direccion }}</p>
+    </div>
+    
+    <div class="receipt-section receipt-details">
+      <h3>Detalles del Plan</h3>
+      <p><strong>Plan:</strong> {{ plan.nombre }}</p>
+      <p><strong>Descripción:</strong> {{ plan.descripcion }}</p>
+      <p><strong>Duración:</strong> {{ plan.duracion_meses }} meses</p>
+    </div> 
+
+    <div class="receipt-total text-center mt-4">
+      <h2>Total a pagar</h2>
+      <p class="fw-bold">${{ plan.precio }} COP</p>
+    </div>
+
+    <div class="text-center mt-4 no-print">
+      <form action="{% url 'contratar_plan' plan.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning btn-animated">
+          Confirmar Compra
+        </button>
+      </form>
+      <br>
+      <a href="{% url 'dashboard_cliente' %}" class="btn btn-custom mt-3">Cancelar</a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
